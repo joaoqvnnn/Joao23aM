@@ -1,0 +1,450 @@
+<script>
+/* =========================================================
+   1. TELEGRAM MINI APP — USUÁRIO
+   ========================================================= */
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
+
+const API_URL = window.location.origin; // Backend roda na mesma origem
+
+function loadTelegramUser(){
+  const user = tg && tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
+  const nameEl = document.getElementById('userName');
+  const handleEl = document.getElementById('userHandle');
+  const avatarEl = document.getElementById('avatar');
+
+  if (user) {
+    const full = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Usuário';
+    nameEl.textContent = full;
+    handleEl.textContent = user.username ? '@' + user.username : ('ID ' + user.id);
+    if (user.photo_url) avatarEl.src = user.photo_url;
+  } else {
+    nameEl.textContent = 'Usuário Telegram';
+    handleEl.textContent = '@usuario';
+  }
+}
+loadTelegramUser();
+
+/* =========================================================
+   2. ESTADO E DADOS
+   ========================================================= */
+const state = {
+  saldo: 0.00,
+  cart: {},
+  pixValue: 0,
+  pixPaymentId: null,
+  pixStatus: 'idle',
+  checkoutMode: false,
+};
+
+const PRODUCTS = [
+  { id:1, nome:'Curso Marketing Digital',   desc:'42 aulas · acesso vitalício · certificado', preco:97.90,  estoque:12, img:'' },
+  { id:2, nome:'Pacote de Artes Premium',   desc:'300 templates editáveis em alta resolução', preco:39.90,  estoque:48, img:'' },
+  { id:3, nome:'E-book Finanças Pessoais',  desc:'180 páginas · PDF + versão para Kindle',    preco:24.90,  estoque:5,  img:'' },
+  { id:4, nome:'Presets Lightroom Pro',     desc:'60 presets para fotos e vídeos mobile',     preco:34.90,  estoque:0,  img:'' },
+  { id:5, nome:'Mentoria Individual',       desc:'Sessão de 60 min por videochamada',         preco:189.90, estoque:3,  img:'' },
+  { id:6, nome:'Planilhas de Gestão',       desc:'Kit com 12 planilhas financeiras em Excel', preco:49.90,  estoque:27, img:'' },
+];
+
+/* =========================================================
+   3. HELPERS
+   ========================================================= */
+const brl = n => n.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   4. CATÁLOGO
+   ========================================================= */
+const grid = document.getElementById('grid');
+const ICON_PLUS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`;
+const ICON_CHECK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+const ICON_BOX = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v8a2 2 0 0 1-1 1.7l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.7l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>`;
+
+function renderCatalog(){
+  document.getElementById('catalogCount').textContent =
+    PRODUCTS.length + (PRODUCTS.length === 1 ? ' produto' : ' produtos');
+
+  grid.innerHTML = PRODUCTS.map(p => {
+    const qty = state.cart[p.id] || 0;
+    const semEstoque = p.estoque <= 0;
+    const estoqueBaixo = p.estoque > 0 && p.estoque <= 5;
+
+    let stockClass = 'stock', stockLabel = p.estoque + ' disponíveis';
+    if (semEstoque) { stockClass += ' zero'; stockLabel = 'Esgotado'; }
+    else if (estoqueBaixo) { stockClass += ' low'; stockLabel = 'Últimas ' + p.estoque + ' unidades'; }
+
+    const imgSrc = p.img || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231b222b'/><text x='50' y='55' font-size='30' text-anchor='middle' fill='%233a4756' font-family='sans-serif'>📦</text></svg>`;
+
+    const btnClass = 'btn-add' + (qty > 0 ? ' added' : '');
+    const btnContent = qty > 0
+      ? ICON_CHECK + '<span>Qtd ' + qty + '</span>'
+      : ICON_PLUS + '<span>Add</span>';
+
+    return `
+      <article class="card">
+        <div class="thumb">
+          <img src="${imgSrc}" alt="${p.nome}" loading="lazy">
+          <span class="tag ${semEstoque ? 'out' : ''}">
+            <span class="dot"></span>${semEstoque ? 'Esgotado' : 'Disponível'}
+          </span>
+        </div>
+        <div class="card-body">
+          <h3>${p.nome}</h3>
+          <p class="desc">${p.desc}</p>
+          <div class="${stockClass}">${ICON_BOX}<span>${stockLabel}</span></div>
+          <div class="card-foot">
+            <span class="price"><small>à vista</small>${brl(p.preco)}</span>
+            <button class="${btnClass}" data-add="${p.id}" ${semEstoque ? 'disabled' : ''}>
+              ${semEstoque ? '<span>Esgotado</span>' : btnContent}
+            </button>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+}
+
+grid.addEventListener('click', e => {
+  const btn = e.target.closest('[data-add]');
+  if (!btn || btn.disabled) return;
+  const id = Number(btn.dataset.add);
+  const prod = PRODUCTS.find(p => p.id === id);
+  const atual = state.cart[id] || 0;
+  if (atual >= prod.estoque) { toast('Estoque máximo atingido'); return; }
+  state.cart[id] = atual + 1;
+  renderCatalog();
+  renderCart();
+});
+
+/* =========================================================
+   5. CARRINHO
+   ========================================================= */
+function cartTotals(){
+  let qtd = 0, total = 0;
+  for (const id in state.cart) {
+    const p = PRODUCTS.find(x => x.id === Number(id));
+    if (!p) continue;
+    qtd += state.cart[id];
+    total += p.preco * state.cart[id];
+  }
+  return { qtd, total };
+}
+
+function renderCart(){
+  const { qtd, total } = cartTotals();
+  const bar = document.getElementById('cartBar');
+  document.getElementById('cartBadge').textContent = qtd;
+  document.getElementById('cartCountLabel').textContent =
+    qtd === 0 ? 'Carrinho vazio' : qtd + (qtd === 1 ? ' item' : ' itens');
+  document.getElementById('cartTotal').textContent = brl(total);
+  document.getElementById('checkoutBtn').disabled = qtd === 0;
+  bar.classList.toggle('show', qtd > 0);
+}
+
+/* =========================================================
+   6. SALDO
+   ========================================================= */
+function renderBalance(){
+  const txt = brl(state.saldo);
+  document.getElementById('walletBalance').textContent = txt;
+  document.getElementById('chipBalance').textContent = txt;
+}
+
+/* =========================================================
+   7. MÁSCARA E VALIDAÇÃO DO VALOR
+   ========================================================= */
+const amountInput = document.getElementById('amountInput');
+const amountField = document.getElementById('amountField');
+const amountHint  = document.getElementById('amountHint');
+const HINT_DEFAULT = 'Mínimo R$ 1,00 · Máximo R$ 5.000,00';
+const MIN_VALUE = 1;
+const MAX_VALUE = 5000;
+
+amountInput.addEventListener('input', () => {
+  let digits = amountInput.value.replace(/\D/g, '');
+  if (digits.length > 9) digits = digits.slice(0, 9);
+  if (!digits) { amountInput.value = ''; clearAmountError(); return; }
+  const num = parseInt(digits, 10) / 100;
+  amountInput.value = num.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  clearAmountError();
+});
+
+function getAmount(){
+  const raw = amountInput.value.replace(/\./g, '').replace(',', '.');
+  if (!raw) return NaN;
+  const n = parseFloat(raw);
+  return isNaN(n) ? NaN : Math.round(n * 100) / 100;
+}
+function setAmountError(msg){
+  amountField.classList.add('error');
+  amountHint.classList.add('err');
+  amountHint.textContent = msg;
+}
+function clearAmountError(){
+  amountField.classList.remove('error');
+  amountHint.classList.remove('err');
+  amountHint.textContent = HINT_DEFAULT;
+}
+function validateAmount(){
+  const v = getAmount();
+  if (isNaN(v) || v <= 0) { setAmountError('Digite um valor válido para continuar.'); return null; }
+  if (v < MIN_VALUE)     { setAmountError('O valor mínimo é R$ 1,00.'); return null; }
+  if (v > MAX_VALUE)     { setAmountError('O valor máximo é R$ 5.000,00.'); return null; }
+  clearAmountError();
+  return v;
+}
+
+document.getElementById('quickValues').addEventListener('click', e => {
+  const b = e.target.closest('[data-value]');
+  if (!b) return;
+  const cents = b.dataset.value;
+  const num = parseInt(cents, 10) / 100;
+  amountInput.value = num.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  clearAmountError();
+});
+
+/* =========================================================
+   8. FLUXO DO OVERLAY
+   ========================================================= */
+const overlay    = document.getElementById('pixOverlay');
+const stepValue  = document.getElementById('stepValue');
+const stepQr     = document.getElementById('stepQr');
+const stepOk     = document.getElementById('stepSuccess');
+const sheetTitle = document.getElementById('sheetTitle');
+const statusPill = document.getElementById('statusPill');
+const qrImage    = document.getElementById('qrImage');
+const qrLoading  = document.getElementById('qrLoading');
+
+function showStep(step){
+  [stepValue, stepQr, stepOk].forEach(s => s.classList.remove('active'));
+  step.classList.add('active');
+  overlay.querySelector('.sheet').scrollTop = 0;
+}
+
+function openOverlay(mode){
+  state.checkoutMode = (mode === 'checkout');
+  sheetTitle.textContent = state.checkoutMode ? 'Finalizar compra' : 'Adicionar saldo';
+
+  if (state.checkoutMode) {
+    const { total } = cartTotals();
+    amountInput.value = total.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  } else {
+    amountInput.value = '';
+  }
+  clearAmountError();
+  resetStatus();
+  showStep(stepValue);
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay(){
+  overlay.classList.remove('show');
+  document.body.style.overflow = '';
+  resetStatus();
+}
+
+function resetStatus(){
+  state.pixStatus = 'idle';
+  state.pixPaymentId = null;
+  statusPill.classList.remove('ok');
+  statusPill.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+    </svg>
+    <span>Aguardando pagamento</span>`;
+  document.getElementById('checkPayment').disabled = false;
+  document.getElementById('checkPayment').innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 6 9 17l-5-5"/>
+    </svg> Verificar pagamento`;
+}
+
+document.getElementById('openDeposit').addEventListener('click', () => openOverlay('deposit'));
+document.getElementById('closeSheet').addEventListener('click', closeOverlay);
+document.getElementById('backToValue').addEventListener('click', () => {
+  resetStatus();
+  showStep(stepValue);
+});
+overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+
+/* =========================================================
+   9. GERAR PIX — CHAMADA REAL AO BACKEND
+   ========================================================= */
+document.getElementById('generatePix').addEventListener('click', async () => {
+  const value = validateAmount();
+  if (value === null) { amountInput.focus(); return; }
+
+  const btn = document.getElementById('generatePix');
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Gerando PIX...';
+
+  try {
+    const user = tg && tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
+    const email = (user && user.id) ? `user${user.id}@telegram.pix` : 'cliente@lojadigital.com.br';
+    const nome = user ? (user.first_name || 'Cliente') : 'Cliente';
+
+    const response = await fetch(`${API_URL}/api/create-pix`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        valor: value,
+        email: email,
+        nome: nome,
+        txid: `PIX-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.sucesso) {
+      throw new Error(data.erro || 'Erro ao gerar PIX');
+    }
+
+    // Guarda o ID do pagamento para consultar depois
+    state.pixPaymentId = data.payment_id;
+    state.pixValue = value;
+
+    // Exibe os dados do PIX
+    document.getElementById('pixAmount').textContent = brl(value);
+    document.getElementById('pixKey').textContent = data.qr_code ? 'Código Pix Copia e Cola' : '---';
+
+    // Se o Mercado Pago devolver o QR Code em base64, usa direto
+    if (data.qr_code_base64) {
+      qrImage.src = 'data:image/png;base64,' + data.qr_code_base64;
+      qrLoading.style.display = 'none';
+      qrImage.style.visibility = 'visible';
+    } else if (data.qr_code) {
+      // Se não, usa um gerador externo com o código copia-e-cola
+      qrLoading.style.display = 'grid';
+      qrImage.style.visibility = 'hidden';
+      qrImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=372x372&margin=0&data=' +
+                    encodeURIComponent(data.qr_code);
+      qrImage.onload = () => {
+        qrLoading.style.display = 'none';
+        qrImage.style.visibility = 'visible';
+      };
+    }
+
+    // O botão "Copiar Chave" agora copia o código Pix completo
+    document.getElementById('copyKey').onclick = function(){
+      const code = data.qr_code || '';
+      if (code) {
+        navigator.clipboard.writeText(code).then(() => toast('Código Pix copiado!')).catch(() => fallbackCopy(code, () => toast('Código Pix copiado!')));
+      }
+    };
+
+    resetStatus();
+    state.pixStatus = 'waiting';
+    showStep(stepQr);
+
+  } catch (error) {
+    console.error(error);
+    toast('Erro: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+});
+
+/* =========================================================
+   10. VERIFICAR PAGAMENTO — CONSULTA AO BACKEND
+   ========================================================= */
+document.getElementById('checkPayment').addEventListener('click', async function(){
+  if (state.pixStatus === 'checking' || state.pixStatus === 'paid') return;
+  if (!state.pixPaymentId) { toast('Nenhum PIX gerado ainda.'); return; }
+
+  state.pixStatus = 'checking';
+
+  statusPill.classList.remove('ok');
+  statusPill.innerHTML = '<div class="spinner"></div><span>Verificando pagamento…</span>';
+  this.disabled = true;
+  this.innerHTML = '<div class="spinner"></div> Verificando…';
+
+  try {
+    const response = await fetch(`${API_URL}/api/payment/${state.pixPaymentId}`);
+    const data = await response.json();
+
+    if (data.status === 'approved') {
+      state.pixStatus = 'paid';
+
+      statusPill.classList.add('ok');
+      statusPill.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg><span>Pagamento aprovado</span>`;
+
+      if (state.checkoutMode) {
+        const { total, qtd } = cartTotals();
+        state.saldo -= total;
+        if (state.saldo < 0) state.saldo = 0;
+        document.getElementById('successText').textContent =
+          qtd + (qtd === 1 ? ' item entregue' : ' itens entregues') + '. Pedido confirmado!';
+        state.cart = {};
+        renderCatalog();
+        renderCart();
+      } else {
+        state.saldo += state.pixValue;
+        document.getElementById('successText').textContent =
+          brl(state.pixValue) + ' foram creditados no seu saldo.';
+      }
+      renderBalance();
+      showStep(stepOk);
+    } else {
+      // Ainda não pagou
+      state.pixStatus = 'waiting';
+      statusPill.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+        </svg><span>Aguardando pagamento…</span>`;
+      this.disabled = false;
+      this.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg> Verificar pagamento`;
+      toast('Pagamento ainda não identificado. Aguarde alguns segundos e tente novamente.');
+    }
+  } catch (error) {
+    console.error(error);
+    state.pixStatus = 'waiting';
+    this.disabled = false;
+    this.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6 9 17l-5-5"/>
+      </svg> Verificar pagamento`;
+    toast('Erro ao verificar. Tente novamente.');
+  }
+});
+
+/* =========================================================
+   11. CONCLUIR
+   ========================================================= */
+document.getElementById('finishBtn').addEventListener('click', () => {
+  closeOverlay();
+  toast(state.checkoutMode ? 'Compra concluída!' : 'Saldo adicionado!');
+});
+
+/* =========================================================
+   12. CHECKOUT
+   ========================================================= */
+document.getElementById('checkoutBtn').addEventListener('click', () => {
+  const { qtd } = cartTotals();
+  if (qtd === 0) return;
+  openOverlay('checkout');
+});
+
+/* =========================================================
+   13. INIT
+   ========================================================= */
+renderBalance();
+renderCatalog();
+renderCart();
+</script>
