@@ -21,7 +21,7 @@
     background:radial-gradient(900px 380px at 50% -140px, rgba(46,166,255,.15), transparent 70%), var(--bg);
     color:var(--text);
     font-size:15px; line-height:1.45;
-    padding: 16px 16px 160px; 
+    padding: 16px 16px 160px;
     max-width: 600px; margin: 0 auto;
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
@@ -31,7 +31,6 @@
   button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
   input{font-family:inherit}
 
-  /* TOPBAR */
   .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:16px;}
   .user{display:flex; align-items:center; gap:11px; min-width:0; flex:1;}
   .avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(46,166,255,.5);background:var(--surface2);box-shadow:0 0 0 3px rgba(46,166,255,.10);}
@@ -41,7 +40,6 @@
   .balance-chip{display:flex;align-items:center;gap:6px;background:linear-gradient(180deg,rgba(34,197,94,.15),rgba(34,197,94,.06));border:1px solid rgba(34,197,94,.3);color:#7ee2a8;padding:8px 12px;border-radius:999px;font-size:13.5px;font-weight:700;letter-spacing:-.2px;white-space:nowrap; flex-shrink:0;}
   .balance-chip svg{width:15px;height:15px}
 
-  /* CARTÃO SALDO */
   .wallet{position:relative; overflow:hidden;background:linear-gradient(135deg,#1d5fa8 0%,#1a4d8f 45%,#123a6e 100%);border-radius:var(--radius);padding:18px;margin-bottom:24px;box-shadow:0 10px 30px -12px rgba(29,95,168,.6);display: flex; flex-direction: column; gap: 16px;}
   .wallet::after{content:'';position:absolute;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.12),transparent 70%);top:-80px;right:-60px;pointer-events:none;}
   .wallet-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:relative;z-index:1; flex-wrap: wrap;}
@@ -53,7 +51,6 @@
   .wallet-stats span{font-size:11.5px;color:rgba(255,255,255,.65)}
   .wallet-stats strong{font-size:14.5px;font-weight:700;color:#fff}
 
-  /* BOTÕES */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:650;letter-spacing:-.1px;padding:11px 16px;border-radius:11px;transition:transform .12s ease,filter .15s ease,opacity .15s;white-space:nowrap;}
   .btn:active{transform:scale(.97)}
   .btn svg{width:16px;height:16px}
@@ -69,12 +66,10 @@
   .icon-btn:hover{background:var(--surface3);color:var(--text)}
   .icon-btn svg{width:16px;height:16px}
 
-  /* SEÇÃO */
   .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;}
   .section-head h2{font-size:18px;font-weight:750;letter-spacing:-.4px}
   .section-head .count{font-size:12.5px;color:var(--muted);font-weight:500}
 
-  /* GRID CATÁLOGO */
   .grid{display:grid;grid-template-columns: repeat(2, 1fr); gap:14px;}
   @media (max-width: 360px) { .grid { grid-template-columns: 1fr; } }
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:border-color .18s,transform .18s;}
@@ -103,7 +98,6 @@
   .btn-add.added{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:#4ade80}
   .btn-add:disabled{opacity:.35;cursor:not-allowed;background:var(--surface2);border-color:var(--border);color:var(--muted)}
 
-  /* BARRA CARRINHO */
   .cartbar{position:fixed;left:16px;right:16px;bottom:16px;max-width:568px;margin: 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(27,34,43,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:16px;padding:12px 14px;box-shadow:0 16px 40px -14px rgba(0,0,0,.9);transform:translateY(140%);transition:transform .32s cubic-bezier(.22,1,.36,1);z-index:40;}
   .cartbar.show{transform:translateY(0)}
   .cart-info{display:flex;align-items:center;gap:10px;min-width:0}
@@ -114,7 +108,6 @@
   .cart-text span{font-size:11px;color:var(--muted)}
   .cart-text strong{font-size:15px;font-weight:800;letter-spacing:-.3px}
 
-  /* OVERLAY PIX */
   .overlay{position:fixed;inset:0;z-index:60;background:rgba(6,9,13,.75);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s;}
   .overlay.show{opacity:1;visibility:visible}
   .sheet{width:100%;max-width:520px;max-height:92vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-bottom:0;border-radius:22px 22px 0 0;padding:8px 18px 26px;transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1);}
@@ -126,7 +119,6 @@
   .step.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-  /* CAMPOS */
   .field-label{display:block;font-size:12.5px;font-weight:650;color:var(--muted);margin-bottom:8px;letter-spacing:.2px;}
   .field{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border);border-radius:13px;padding:0 15px;transition:border-color .18s,box-shadow .18s;}
   .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,166,255,.14)}
@@ -136,12 +128,12 @@
   .field input::placeholder{color:#4b5563;font-weight:600}
   .hint{font-size:12px;color:var(--muted);margin-top:8px;min-height:16px;transition:color .2s;}
   .hint.err{color:var(--red);font-weight:600}
-  .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 20px}
+  .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 10px}
   .quick button{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:650;padding:10px 4px;border-radius:10px;transition:background .15s,border-color .15s,transform .12s;}
   .quick button:hover{background:var(--surface3);border-color:#38424f}
   .quick button:active{transform:scale(.95)}
+  .quick.test button{background:rgba(240,180,41,.1);border-color:rgba(240,180,41,.3);color:var(--amber);}
 
-  /* QR */
   .qr-box{background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:16px;}
   .qr-frame{background:#fff;border-radius:14px;padding:10px;box-shadow:0 6px 22px -8px rgba(0,0,0,.7);position:relative;}
   .qr-frame img{width:186px;height:186px;display:block;border-radius:6px}
@@ -178,7 +170,6 @@
 </head>
 <body>
 
-<!-- ================= TOPBAR ================= -->
 <header class="topbar">
   <div class="user">
     <img id="avatar" class="avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231b222b'/><circle cx='50' cy='38' r='17' fill='%233a4756'/><path d='M18 92c0-18 14-30 32-30s32 12 32 30z' fill='%233a4756'/></svg>" alt="Foto do usuário">
@@ -197,7 +188,6 @@
   </div>
 </header>
 
-<!-- ================= CARTÃO DE SALDO ================= -->
 <section class="wallet">
   <div class="wallet-top">
     <div>
@@ -223,7 +213,6 @@
   </div>
 </section>
 
-<!-- ================= CATÁLOGO ================= -->
 <section>
   <div class="section-head">
     <h2>Catálogo</h2>
@@ -232,7 +221,6 @@
   <div class="grid" id="grid"></div>
 </section>
 
-<!-- ================= BARRA DO CARRINHO ================= -->
 <div class="cartbar" id="cartBar">
   <div class="cart-info">
     <div class="cart-icon">
@@ -255,7 +243,6 @@
   </button>
 </div>
 
-<!-- ================= OVERLAY PIX ================= -->
 <div class="overlay" id="pixOverlay">
   <div class="sheet">
     <div class="grabber"></div>
@@ -268,20 +255,23 @@
       </button>
     </div>
 
-    <!-- ETAPA 1: VALOR -->
     <div class="step active" id="stepValue">
       <label class="field-label" for="amountInput">Digite o valor</label>
       <div class="field" id="amountField">
         <span class="field-prefix">R$</span>
         <input id="amountInput" type="text" inputmode="numeric" autocomplete="off" placeholder="0,00">
       </div>
-      <p class="hint" id="amountHint">Mínimo R$ 1,00 · Máximo R$ 5.000,00</p>
+      <p class="hint" id="amountHint">Mínimo R$ 0,01 · Máximo R$ 100.000,00</p>
 
-      <div class="quick" id="quickValues">
-        <button type="button" data-value="2000">R$ 20</button>
+      <div class="quick test" id="quickValues">
+        <button type="button" data-value="1">R$ 0,01</button>
+        <button type="button" data-value="5">R$ 0,05</button>
+        <button type="button" data-value="10">R$ 0,10</button>
+        <button type="button" data-value="50">R$ 0,50</button>
+        <button type="button" data-value="100">R$ 1</button>
+        <button type="button" data-value="500">R$ 5</button>
+        <button type="button" data-value="1000">R$ 10</button>
         <button type="button" data-value="5000">R$ 50</button>
-        <button type="button" data-value="10000">R$ 100</button>
-        <button type="button" data-value="20000">R$ 200</button>
       </div>
 
       <button class="btn btn-primary btn-block" id="generatePix">
@@ -295,7 +285,6 @@
       </button>
     </div>
 
-    <!-- ETAPA 2: QR CODE -->
     <div class="step" id="stepQr">
       <div class="qr-box">
         <div class="qr-frame">
@@ -354,7 +343,6 @@
       </div>
     </div>
 
-    <!-- ETAPA 3: SUCESSO -->
     <div class="step" id="stepSuccess">
       <div class="success-state">
         <div class="success-icon">
@@ -371,7 +359,6 @@
   </div>
 </div>
 
-<!-- ================= TOAST ================= -->
 <div class="toast" id="toast">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
     <path d="M20 6 9 17l-5-5"/>
@@ -381,12 +368,12 @@
 
 <script>
 /* =========================================================
-   1. TELEGRAM MINI APP — USUÁRIO
+   1. TELEGRAM MINI APP
    ========================================================= */
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-const API_URL = window.location.origin; 
+const API_URL = window.location.origin;
 
 function loadTelegramUser(){
   const user = tg && tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
@@ -539,18 +526,18 @@ function renderBalance(){
 }
 
 /* =========================================================
-   7. MÁSCARA E VALIDAÇÃO DO VALOR
+   7. MÁSCARA E VALIDAÇÃO — AGORA ACEITA R$ 0,01
    ========================================================= */
 const amountInput = document.getElementById('amountInput');
 const amountField = document.getElementById('amountField');
 const amountHint  = document.getElementById('amountHint');
-const HINT_DEFAULT = 'Mínimo R$ 1,00 · Máximo R$ 5.000,00';
-const MIN_VALUE = 1;
-const MAX_VALUE = 5000;
+const HINT_DEFAULT = 'Mínimo R$ 0,01 · Máximo R$ 100.000,00';
+const MIN_VALUE = 0.01;
+const MAX_VALUE = 100000;
 
 amountInput.addEventListener('input', () => {
   let digits = amountInput.value.replace(/\D/g, '');
-  if (digits.length > 9) digits = digits.slice(0, 9);
+  if (digits.length > 11) digits = digits.slice(0, 11);
   if (!digits) { amountInput.value = ''; clearAmountError(); return; }
   const num = parseInt(digits, 10) / 100;
   amountInput.value = num.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
@@ -576,8 +563,8 @@ function clearAmountError(){
 function validateAmount(){
   const v = getAmount();
   if (isNaN(v) || v <= 0) { setAmountError('Digite um valor válido para continuar.'); return null; }
-  if (v < MIN_VALUE)     { setAmountError('O valor mínimo é R$ 1,00.'); return null; }
-  if (v > MAX_VALUE)     { setAmountError('O valor máximo é R$ 5.000,00.'); return null; }
+  if (v < MIN_VALUE)     { setAmountError('O valor mínimo é R$ 0,01.'); return null; }
+  if (v > MAX_VALUE)     { setAmountError('O valor máximo é R$ 100.000,00.'); return null; }
   clearAmountError();
   return v;
 }
@@ -657,7 +644,7 @@ document.getElementById('backToValue').addEventListener('click', () => {
 overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
 
 /* =========================================================
-   9. GERAR PIX — CHAMADA REAL AO BACKEND
+   9. GERAR PIX
    ========================================================= */
 document.getElementById('generatePix').addEventListener('click', async () => {
   const value = validateAmount();
@@ -730,6 +717,14 @@ document.getElementById('generatePix').addEventListener('click', async () => {
     btn.innerHTML = originalText;
   }
 });
+
+function fallbackCopy(text, cb){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e){}
+  document.body.removeChild(ta);
+}
 
 /* =========================================================
    10. VERIFICAR PAGAMENTO
