@@ -23,9 +23,12 @@ app.post('/api/create-pix', async (req, res) => {
   try {
     const { valor, email, nome, txid } = req.body;
 
-    // Validações
-    if (!valor || isNaN(valor) || valor < 1 || valor > 5000) {
-      return res.status(400).json({ erro: 'Valor inválido. Mínimo R$ 1,00 e máximo R$ 5.000,00.' });
+    // Validações - AGORA ACEITA A PARTIR DE R$ 0,01
+    if (valor === undefined || valor === null || isNaN(valor) || Number(valor) < 0.01) {
+      return res.status(400).json({ erro: 'Valor inválido. Mínimo R$ 0,01.' });
+    }
+    if (Number(valor) > 100000) {
+      return res.status(400).json({ erro: 'Valor máximo permitido: R$ 100.000,00.' });
     }
     if (!email || !email.includes('@')) {
       return res.status(400).json({ erro: 'E-mail inválido. É obrigatório para o PIX.' });
@@ -34,7 +37,7 @@ app.post('/api/create-pix', async (req, res) => {
     const idempotencyKey = txid || `PIX-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
     const body = {
-      transaction_amount: Number(valor),
+      transaction_amount: Number(Number(valor).toFixed(2)),
       description: 'Compra na Loja Digital',
       payment_method_id: 'pix',
       payer: {
@@ -50,7 +53,6 @@ app.post('/api/create-pix', async (req, res) => {
       requestOptions: { idempotencyKey },
     });
 
-    // Extrai dados do PIX
     const pixData = result.point_of_interaction?.transaction_data;
 
     res.json({
@@ -89,13 +91,11 @@ app.get('/api/payment/:id', async (req, res) => {
   }
 });
 
-// ====== ROTA 3: WEBHOOK (notificações do Mercado Pago) ======
+// ====== ROTA 3: WEBHOOK ======
 app.post('/api/webhook', async (req, res) => {
   try {
     const { type, data } = req.body;
 
-    // Mercado Pago envia notificações de vários tipos.
-    // Só nos interessa "payment"
     if (type === 'payment' && data?.id) {
       const paymentId = data.id;
       const result = await payment.get({ id: paymentId });
@@ -105,32 +105,24 @@ app.post('/api/webhook', async (req, res) => {
       console.log(`   Valor: R$ ${result.transaction_amount}`);
       console.log(`   Referência: ${result.external_reference}`);
 
-      // Aqui você pode:
-      // - Atualizar o saldo do usuário no banco de dados
-      // - Marcar o pedido como pago
-      // - Enviar uma notificação via Telegram Bot API
-
       if (result.status === 'approved') {
         console.log('✅ PAGAMENTO APROVADO! Liberando produto/saldo...');
-        // TODO: Integrar com seu banco de dados ou Telegram Bot
       }
     }
 
-    // Sempre responder 200 para o Mercado Pago não reenviar
     res.status(200).send('OK');
-
   } catch (error) {
     console.error('Erro no webhook:', error);
-    res.status(200).send('OK'); // Mesmo com erro, responde 200 para evitar reenvios
+    res.status(200).send('OK');
   }
 });
 
-// ====== ROTA DE HEALTH CHECK ======
+// ====== HEALTH CHECK ======
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ====== FALLBACK: SPA ======
+// ====== FALLBACK SPA ======
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
