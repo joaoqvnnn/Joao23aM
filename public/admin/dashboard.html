@@ -3,34 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0b0f">
-<title>Dashboard — Admin</title>
+<meta name="theme-color" content="#ffffff">
+<title>Dashboard — Painel Administrativo</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   :root{
-    --bg:#0a0b0f;
-    --bg-soft:#0f1016;
-    --card:#13141b;
-    --card-2:#171821;
-    --border:#1f2029;
-    --border-soft:#23242e;
-    --text:#e8e9ed;
-    --text-2:#b8bac4;
-    --muted:#8b8d98;
-    --muted-2:#5c5e6a;
-    --blue:#3b82f6;
-    --blue-soft:rgba(59,130,246,.12);
-    --green:#10b981;
-    --green-soft:rgba(16,185,129,.12);
-    --purple:#8b5cf6;
-    --purple-soft:rgba(139,92,246,.12);
-    --orange:#f59e0b;
-    --orange-soft:rgba(245,158,11,.12);
-    --red:#ef4444;
-    --red-soft:rgba(239,68,68,.12);
+    --bg:#f7f8fa;
+    --bg-2:#eef0f4;
+    --card:#ffffff;
+    --card-2:#fafbfc;
+    --card-hover:#f1f3f7;
+    --border:#e5e8ee;
+    --border-2:#d6dae2;
+    --text:#0f172a;
+    --text-2:#334155;
+    --text-3:#64748b;
+    --muted:#94a3b8;
+    --muted-2:#cbd5e1;
+    --blue:#2563eb;
+    --blue-2:#3b82f6;
+    --blue-soft:#eff6ff;
+    --green:#059669;
+    --green-2:#10b981;
+    --green-soft:#ecfdf5;
+    --purple:#7c3aed;
+    --purple-2:#8b5cf6;
+    --purple-soft:#f5f3ff;
+    --orange:#d97706;
+    --orange-2:#f59e0b;
+    --orange-soft:#fffbeb;
+    --red:#dc2626;
+    --red-soft:#fef2f2;
+    --pink:#db2777;
     --radius:16px;
     --radius-sm:10px;
+    --shadow-sm:0 1px 2px rgba(15,23,42,.04);
+    --shadow:0 4px 14px -2px rgba(15,23,42,.06), 0 2px 4px -2px rgba(15,23,42,.04);
+    --shadow-lg:0 20px 40px -12px rgba(15,23,42,.12);
   }
   html,body{height:100%}
   body{
@@ -41,7 +51,7 @@
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
-    padding:max(16px, env(safe-area-inset-top)) 16px 40px;
+    padding:max(16px, env(safe-area-inset-top)) 16px 60px;
     max-width:1200px;
     margin:0 auto;
   }
@@ -49,274 +59,330 @@
   button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
   input,select{font-family:inherit}
 
-  /* ============ CABEÇALHO ============ */
-  .page-head{margin-bottom:20px}
+  /* ============================================================
+     CABEÇALHO
+     ============================================================ */
+  .page-head{margin-bottom:22px}
   .page-head h1{
-    font-size:26px;font-weight:800;letter-spacing:-.7px;
-    color:var(--text);margin-bottom:2px;
+    font-size:28px;font-weight:800;letter-spacing:-.8px;
+    color:var(--text);margin-bottom:4px;
   }
-  .page-head p{font-size:13.5px;color:var(--muted)}
+  .page-head p{font-size:14px;color:var(--text-3)}
 
   .head-actions{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    margin-top:16px;flex-wrap:wrap;
+    display:flex;align-items:center;gap:10px;
+    margin-top:18px;flex-wrap:wrap;
   }
-  .date-filter{
-    display:inline-flex;align-items:center;gap:8px;
+  .filter-trigger{
+    display:inline-flex;align-items:center;gap:9px;
     background:var(--card);border:1px solid var(--border);
-    padding:9px 14px;border-radius:10px;
-    font-size:13px;font-weight:600;color:var(--text-2);
-    transition:border-color .15s,background .15s;
+    padding:10px 16px;border-radius:12px;
+    font-size:13.5px;font-weight:650;color:var(--text-2);
+    box-shadow:var(--shadow-sm);
+    transition:border-color .15s,box-shadow .15s,transform .1s;
   }
-  .date-filter:hover{border-color:var(--border-soft);background:var(--card-2)}
-  .date-filter svg{width:16px;height:16px;color:var(--muted)}
+  .filter-trigger:hover{border-color:var(--border-2);box-shadow:var(--shadow)}
+  .filter-trigger:active{transform:scale(.98)}
+  .filter-trigger svg{width:16px;height:16px;color:var(--text-3)}
+  .filter-trigger .caret{
+    width:12px;height:12px;color:var(--muted);
+    transition:transform .2s;
+  }
+  .filter-trigger.open .caret{transform:rotate(180deg)}
+
   .eye-btn{
-    width:38px;height:38px;border-radius:10px;
+    width:42px;height:42px;border-radius:12px;
     background:var(--card);border:1px solid var(--border);
-    display:grid;place-items:center;color:var(--muted);
-    transition:color .15s,border-color .15s;
+    display:grid;place-items:center;color:var(--text-3);
+    box-shadow:var(--shadow-sm);
+    transition:color .15s,border-color .15s,box-shadow .15s,background .15s;
   }
-  .eye-btn:hover{color:var(--text);border-color:var(--border-soft)}
+  .eye-btn:hover{color:var(--text);border-color:var(--border-2);box-shadow:var(--shadow)}
+  .eye-btn.active{background:var(--blue-soft);color:var(--blue);border-color:#bfdbfe}
   .eye-btn svg{width:18px;height:18px}
 
-  /* ============ CARDS DE STATS ============ */
+  /* ============================================================
+     DROPDOWN DE PERÍODO
+     ============================================================ */
+  .dropdown{
+    position:relative;
+  }
+  .dropdown-menu{
+    position:absolute;top:calc(100% + 8px);left:0;z-index:50;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:6px;
+    box-shadow:var(--shadow-lg);
+    min-width:220px;
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:opacity .18s,visibility .18s,transform .18s;
+  }
+  .dropdown-menu.show{opacity:1;visibility:visible;transform:translateY(0)}
+  .dropdown-item{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;border-radius:9px;
+    font-size:13.5px;font-weight:600;color:var(--text-2);
+    cursor:pointer;transition:background .12s,color .12s;
+  }
+  .dropdown-item:hover{background:var(--card-hover);color:var(--text)}
+  .dropdown-item.active{background:var(--blue-soft);color:var(--blue)}
+  .dropdown-item .check{
+    width:14px;height:14px;margin-left:auto;
+    opacity:0;color:var(--blue);
+  }
+  .dropdown-item.active .check{opacity:1}
+  .dropdown-divider{height:1px;background:var(--border);margin:6px 4px}
+
+  /* ============================================================
+     GRID DE KPIs
+     ============================================================ */
   .stats-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:12px;
     margin-bottom:20px;
   }
-  @media (min-width:720px){
-    .stats-grid{grid-template-columns:repeat(4,1fr)}
+  @media (min-width:760px){
+    .stats-grid{grid-template-columns:repeat(4,1fr);gap:14px}
   }
 
   .stat-card{
     background:var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:16px;
+    padding:18px;
+    box-shadow:var(--shadow-sm);
+    transition:box-shadow .2s, transform .2s, border-color .2s;
     position:relative;
     overflow:hidden;
-    transition:border-color .2s, transform .2s;
   }
-  .stat-card:hover{border-color:var(--border-soft);transform:translateY(-1px)}
+  .stat-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--border-2)}
   .stat-top{
-    display:flex;align-items:center;gap:9px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px;margin-bottom:14px;
   }
   .stat-ico{
-    width:32px;height:32px;border-radius:9px;
+    width:36px;height:36px;border-radius:10px;
     display:grid;place-items:center;flex-shrink:0;
   }
-  .stat-ico svg{width:16px;height:16px}
+  .stat-ico svg{width:18px;height:18px}
   .stat-ico.blue{background:var(--blue-soft);color:var(--blue)}
   .stat-ico.green{background:var(--green-soft);color:var(--green)}
   .stat-ico.purple{background:var(--purple-soft);color:var(--purple)}
   .stat-ico.orange{background:var(--orange-soft);color:var(--orange)}
-  .stat-title{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.1px}
+  .stat-title{font-size:13px;color:var(--text-3);font-weight:650;letter-spacing:.1px}
   .stat-value{
-    font-size:23px;font-weight:800;letter-spacing:-.8px;
-    color:var(--text);line-height:1.1;margin-bottom:10px;
+    font-size:24px;font-weight:800;letter-spacing:-.8px;
+    color:var(--text);line-height:1.15;margin-bottom:12px;
+    font-variant-numeric:tabular-nums;
   }
-  .stat-bottom{
-    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  }
+  .stat-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .delta{
-    display:inline-flex;align-items:center;gap:3px;
-    font-size:11.5px;font-weight:700;
-    padding:3px 8px;border-radius:6px;
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:11.5px;font-weight:750;
+    padding:4px 9px;border-radius:7px;
   }
-  .delta svg{width:11px;height:11px}
-  .delta.up{background:var(--green-soft);color:#34d399}
-  .delta.down{background:var(--red-soft);color:#f87171}
-  .delta.neutral{background:rgba(139,141,152,.12);color:var(--muted)}
-  .delta-ref{font-size:11.5px;color:var(--muted-2);font-weight:600}
+  .delta svg{width:12px;height:12px}
+  .delta.up{background:var(--green-soft);color:var(--green)}
+  .delta.down{background:var(--red-soft);color:var(--red)}
+  .delta.neutral{background:var(--bg-2);color:var(--text-3)}
+  .delta-ref{font-size:12px;color:var(--muted);font-weight:650}
 
-  /* ============ CARDS DE GRÁFICO ============ */
+  /* ============================================================
+     CARD GENÉRICO
+     ============================================================ */
   .card{
     background:var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:18px;
+    padding:20px;
     margin-bottom:16px;
+    box-shadow:var(--shadow-sm);
   }
   .card-head{
     display:flex;align-items:flex-start;justify-content:space-between;
-    gap:12px;margin-bottom:16px;flex-wrap:wrap;
+    gap:12px;margin-bottom:18px;flex-wrap:wrap;
   }
   .card-head h3{
-    font-size:15px;font-weight:700;letter-spacing:-.2px;
+    font-size:15.5px;font-weight:750;letter-spacing:-.25px;
     color:var(--text);line-height:1.3;
   }
   .card-head .sub{
-    font-size:12.5px;color:var(--muted);margin-top:2px;
+    font-size:12.5px;color:var(--text-3);margin-top:3px;
     font-weight:500;
   }
-  .filter-btn{
+  .ghost-btn{
     display:inline-flex;align-items:center;gap:6px;
     background:var(--card-2);border:1px solid var(--border);
-    padding:7px 12px;border-radius:9px;
+    padding:8px 13px;border-radius:9px;
     font-size:12.5px;font-weight:650;color:var(--text-2);
-    transition:border-color .15s;
+    transition:background .15s,border-color .15s,color .15s;
   }
-  .filter-btn:hover{border-color:var(--border-soft)}
-  .filter-btn svg{width:14px;height:14px;color:var(--muted)}
+  .ghost-btn:hover{background:var(--card-hover);border-color:var(--border-2);color:var(--text)}
+  .ghost-btn svg{width:14px;height:14px;color:var(--text-3)}
 
   .chart-legend{
-    display:flex;flex-wrap:wrap;gap:14px;
+    display:flex;flex-wrap:wrap;gap:16px;
     margin-bottom:14px;
   }
   .chart-legend span{
-    display:inline-flex;align-items:center;gap:6px;
-    font-size:12.5px;color:var(--text-2);font-weight:550;
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:12.5px;color:var(--text-2);font-weight:600;
   }
   .chart-legend i{
     width:9px;height:9px;border-radius:50%;
     display:inline-block;flex-shrink:0;
   }
-  .chart-wrap{position:relative;height:240px;touch-action:pan-y}
-  @media (max-width:480px){ .chart-wrap{height:210px} }
+  .chart-wrap{position:relative;height:250px;touch-action:pan-y}
+  @media (max-width:480px){ .chart-wrap{height:220px} }
 
-  /* ============ GRID DE 2 COLUNAS ============ */
+  /* ============================================================
+     GRID DE 2 COLUNAS
+     ============================================================ */
   .grid-2{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:16px;
-    margin-bottom:16px;
+    display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px;
   }
-  @media (min-width:820px){
+  @media (min-width:860px){
     .grid-2{grid-template-columns:1fr 1fr}
   }
 
-  /* ============ BUSCA + TABELA DE PRODUTOS ============ */
+  /* ============================================================
+     BUSCA + TABELA
+     ============================================================ */
   .search-row{
-    display:grid;
-    grid-template-columns:1fr auto;
-    gap:10px;
-    margin-bottom:14px;
+    display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:14px;
   }
+  @media (max-width:480px){ .search-row{grid-template-columns:1fr} }
   .search-input{
     display:flex;align-items:center;gap:9px;
     background:var(--card-2);border:1px solid var(--border);
-    border-radius:10px;padding:0 14px;
-    transition:border-color .15s;
+    border-radius:11px;padding:0 14px;
+    transition:border-color .15s,background .15s;
   }
-  .search-input:focus-within{border-color:var(--blue)}
-  .search-input svg{width:16px;height:16px;color:var(--muted-2);flex-shrink:0}
+  .search-input:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+  .search-input svg{width:16px;height:16px;color:var(--muted);flex-shrink:0}
   .search-input input{
     flex:1;background:none;border:0;outline:none;
     color:var(--text);font-size:13.5px;
     padding:11px 0;width:100%;
   }
-  .search-input input::placeholder{color:var(--muted-2)}
+  .search-input input::placeholder{color:var(--muted)}
   .select-cat{
     background:var(--card-2);border:1px solid var(--border);
-    border-radius:10px;padding:11px 34px 11px 14px;
-    color:var(--text-2);font-size:13px;font-weight:600;
-    outline:none;cursor:pointer;
-    appearance:none;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238b8d98' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
-    background-repeat:no-repeat;
-    background-position:right 12px center;
-    transition:border-color .15s;
+    border-radius:11px;padding:11px 34px 11px 14px;
+    color:var(--text-2);font-size:13px;font-weight:650;
+    outline:none;cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;
+    transition:border-color .15s,background-color .15s;
   }
-  .select-cat:focus{border-color:var(--blue)}
+  .select-cat:focus{border-color:var(--blue);background-color:#fff}
 
   .mini-table{width:100%;border-collapse:collapse;font-size:13px}
   .mini-table th{
-    text-align:left;padding:10px 8px;
-    font-size:11px;font-weight:700;color:var(--muted);
+    text-align:left;padding:11px 10px;
+    font-size:11px;font-weight:750;color:var(--text-3);
     text-transform:uppercase;letter-spacing:.5px;
     border-bottom:1px solid var(--border);
     white-space:nowrap;
   }
   .mini-table th.right{text-align:right}
-  .mini-table th .sort{display:inline-flex;align-items:center;gap:3px;cursor:pointer;color:var(--muted)}
-  .mini-table th .sort:hover{color:var(--text-2)}
+  .mini-table th .sort{
+    display:inline-flex;align-items:center;gap:4px;
+    cursor:pointer;color:var(--text-3);
+    transition:color .15s;
+  }
+  .mini-table th .sort:hover{color:var(--text)}
+  .mini-table th .sort.active{color:var(--blue)}
   .mini-table th .sort svg{width:11px;height:11px}
   .mini-table td{
-    padding:12px 8px;border-bottom:1px solid var(--border);
+    padding:13px 10px;border-bottom:1px solid var(--border);
     color:var(--text-2);vertical-align:middle;
   }
   .mini-table tr:last-child td{border-bottom:0}
-  .mini-table td.name{color:var(--text);font-weight:600}
-  .mini-table td.right{text-align:right;font-weight:650;color:var(--text)}
-  .mini-table tr:hover td{background:rgba(59,130,246,.03)}
+  .mini-table td.name{color:var(--text);font-weight:650}
+  .mini-table td.right{text-align:right;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+  .mini-table tr:hover td{background:var(--card-2)}
 
-  /* ============ CONVERSÃO (GAUGE) ============ */
+  /* ============================================================
+     GAUGE (Conversão)
+     ============================================================ */
   .gauge-wrap{
-    position:relative;
-    display:flex;flex-direction:column;align-items:center;
-    padding:8px 0 4px;
+    display:flex;flex-direction:column;align-items:center;padding:6px 0 0;
   }
   .gauge-canvas-wrap{
-    position:relative;
-    width:100%;
-    max-width:320px;
-    aspect-ratio:2/1.15;
-    margin:0 auto;
+    position:relative;width:100%;max-width:340px;
+    aspect-ratio:2/1.1;margin:0 auto;
   }
   .gauge-canvas-wrap canvas{width:100%!important;height:100%!important}
   .gauge-center{
-    position:absolute;
-    left:50%;bottom:6px;transform:translateX(-50%);
+    position:absolute;left:50%;bottom:4px;transform:translateX(-50%);
     text-align:center;pointer-events:none;
   }
   .gauge-center .val{
-    font-size:22px;font-weight:800;color:var(--text);
-    letter-spacing:-.6px;line-height:1.1;
+    font-size:24px;font-weight:800;color:var(--text);
+    letter-spacing:-.7px;line-height:1.1;
+    font-variant-numeric:tabular-nums;
   }
   .gauge-center .lbl{
-    font-size:11.5px;color:var(--muted);font-weight:600;
-    margin-top:2px;
+    font-size:11.5px;color:var(--text-3);font-weight:650;
+    margin-top:3px;
   }
   .gauge-legend{
     display:flex;justify-content:space-between;gap:14px;
-    width:100%;margin-top:14px;
+    width:100%;margin-top:18px;
   }
   .gauge-legend .item{
-    display:flex;align-items:center;gap:7px;
-    font-size:12.5px;color:var(--text-2);font-weight:600;
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;color:var(--text-2);font-weight:650;
   }
   .gauge-legend .item i{
-    width:8px;height:8px;border-radius:50%;display:inline-block;
+    width:9px;height:9px;border-radius:50%;display:inline-block;
     flex-shrink:0;
   }
-  .gauge-legend .item strong{color:var(--text);font-weight:750}
+  .gauge-legend .item strong{color:var(--text);font-weight:800}
 
-  /* ============ MÉTODOS / GATEWAYS ============ */
-  .methods-section + .methods-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+  /* ============================================================
+     MÉTODOS / GATEWAYS
+     ============================================================ */
+  .methods-section + .methods-section{
+    margin-top:18px;padding-top:18px;border-top:1px solid var(--border);
+  }
   .methods-title{
-    display:flex;align-items:center;gap:7px;
-    font-size:13px;font-weight:700;color:var(--text-2);
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:750;color:var(--text-2);
     margin-bottom:12px;
   }
-  .methods-title svg{width:15px;height:15px;color:var(--muted)}
+  .methods-title svg{width:15px;height:15px;color:var(--text-3)}
   .method-row{
     display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:11px 14px;background:var(--card-2);
+    padding:12px 14px;background:var(--card-2);
+    border:1px solid var(--border);
     border-radius:10px;margin-bottom:8px;
+    transition:background .15s,border-color .15s;
   }
+  .method-row:hover{background:var(--card-hover);border-color:var(--border-2)}
   .method-row:last-child{margin-bottom:0}
-  .method-row .name{font-size:13px;color:var(--text-2);font-weight:600}
+  .method-row .name{font-size:13px;color:var(--text-2);font-weight:650}
   .method-row .count{
     font-size:12px;font-weight:750;color:var(--text);
-    background:rgba(139,141,152,.12);
-    padding:3px 10px;border-radius:999px;
+    background:var(--bg-2);
+    padding:4px 11px;border-radius:999px;
+    font-variant-numeric:tabular-nums;
   }
   .empty-line{
-    font-size:12.5px;color:var(--muted-2);
-    text-align:center;padding:16px 0;
+    font-size:12.5px;color:var(--muted);
+    text-align:center;padding:18px 0;
   }
 
-  /* ============ VENDAS POR ESTADO ============ */
+  /* ============================================================
+     LISTA DE ESTADOS
+     ============================================================ */
   .state-list{
     display:flex;flex-direction:column;gap:10px;
-    max-height:520px;overflow-y:auto;
-    padding-right:4px;
-    margin-right:-4px;
+    max-height:560px;overflow-y:auto;
+    padding-right:6px;margin-right:-6px;
   }
-  .state-list::-webkit-scrollbar{width:5px}
-  .state-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .state-list::-webkit-scrollbar{width:6px}
+  .state-list::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
   .state-list::-webkit-scrollbar-track{background:transparent}
 
   .state-item{
@@ -324,124 +390,263 @@
     border:1px solid var(--border);
     border-radius:12px;
     padding:14px 16px;
-    transition:border-color .15s;
+    transition:border-color .18s,background .18s,transform .15s;
+    cursor:pointer;
   }
-  .state-item:hover{border-color:var(--border-soft)}
+  .state-item:hover{
+    border-color:#bfdbfe;
+    background:#fff;
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-sm);
+  }
   .state-top{
-    display:flex;align-items:center;gap:11px;
+    display:flex;align-items:center;gap:12px;
     margin-bottom:12px;
   }
   .state-flag{
-    width:30px;height:30px;border-radius:50%;
+    width:34px;height:34px;border-radius:50%;
     overflow:hidden;flex-shrink:0;
-    background:var(--bg-soft);
+    background:var(--bg-2);
     display:grid;place-items:center;
     border:1px solid var(--border);
-    font-size:11px;font-weight:800;color:var(--muted);
+    font-size:11px;font-weight:800;color:var(--text-3);
+    letter-spacing:-.3px;
   }
   .state-flag img{width:100%;height:100%;object-fit:cover;display:block}
-  .state-name{font-size:13.5px;font-weight:700;color:var(--text);flex:1}
-  .state-revenue{font-size:13.5px;font-weight:750;color:var(--text)}
+  .state-name{
+    font-size:14px;font-weight:750;color:var(--text);flex:1;
+    letter-spacing:-.2px;
+  }
+  .state-revenue{
+    font-size:14px;font-weight:800;color:var(--text);
+    font-variant-numeric:tabular-nums;letter-spacing:-.3px;
+  }
   .state-stats{
     display:grid;grid-template-columns:repeat(3,1fr);
     gap:8px;
   }
-  .state-stats .col{display:flex;flex-direction:column;gap:3px}
+  .state-stats .col{display:flex;flex-direction:column;gap:4px}
   .state-stats .col .lbl{
-    font-size:10.5px;color:var(--muted);font-weight:600;
-    text-transform:uppercase;letter-spacing:.4px;
+    font-size:10.5px;color:var(--text-3);font-weight:650;
+    text-transform:uppercase;letter-spacing:.5px;
   }
   .state-stats .col .val{
-    font-size:14px;font-weight:700;color:var(--text);
+    font-size:15px;font-weight:800;color:var(--text);
+    font-variant-numeric:tabular-nums;
   }
-  .state-stats .col .val.blue{color:#60a5fa}
-  .state-stats .col .val.green{color:#34d399}
-  .state-stats .col .val.purple{color:#a78bfa}
+  .state-stats .col .val.blue{color:var(--blue)}
+  .state-stats .col .val.green{color:var(--green)}
+  .state-stats .col .val.purple{color:var(--purple)}
 
-  /* ============ MAPA ============ */
+  /* ============================================================
+     MAPA DO BRASIL
+     ============================================================ */
   .map-wrap{
     position:relative;width:100%;
     display:flex;align-items:center;justify-content:center;
-    padding:10px 0;
+    padding:14px 0 6px;
+    min-height:420px;
   }
-  .map-wrap svg{
-    width:100%;max-width:420px;height:auto;
-    filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));
+  .map-container{
+    width:100%;max-width:520px;
+    position:relative;
   }
-  .map-wrap svg path{
-    fill:#2a2c36;
-    stroke:#0a0b0f;
-    stroke-width:.6;
-    transition:fill .2s;
+  .map-container svg{
+    width:100%;height:auto;display:block;
+    overflow:visible;
+  }
+  .map-container svg .state{
+    fill:#e2e8f0;
+    stroke:#ffffff;
+    stroke-width:1.2;
     cursor:pointer;
+    transition:fill .2s ease,filter .2s ease,transform .15s ease;
+    transform-origin:center;
+    transform-box:fill-box;
   }
-  .map-wrap svg path:hover{fill:#3b82f6}
+  .map-container svg .state:hover{
+    fill:#93c5fd;
+    filter:drop-shadow(0 3px 8px rgba(37,99,235,.35));
+    transform:translateY(-1px) scale(1.008);
+  }
+  .map-container svg .state.has-sales{
+    fill:#3b82f6;
+  }
+  .map-container svg .state.has-sales:hover{
+    fill:#2563eb;
+  }
+  .map-container svg .state.selected{
+    fill:#1d4ed8 !important;
+    filter:drop-shadow(0 4px 12px rgba(29,78,216,.45));
+  }
+  .map-container svg .state-label{
+    font-size:9px;
+    font-weight:800;
+    fill:#475569;
+    pointer-events:none;
+    text-anchor:middle;
+    dominant-baseline:middle;
+    letter-spacing:-.3px;
+    user-select:none;
+  }
+  .map-container svg .state.selected + .state-label,
+  .map-container svg .state.has-sales + .state-label{
+    fill:#ffffff;
+  }
+  .map-tooltip{
+    position:absolute;
+    pointer-events:none;
+    background:#0f172a;color:#fff;
+    padding:8px 12px;border-radius:9px;
+    font-size:12px;font-weight:650;
+    box-shadow:0 10px 24px -6px rgba(15,23,42,.4);
+    opacity:0;transform:translate(-50%,-140%) scale(.95);
+    transition:opacity .15s,transform .15s;
+    white-space:nowrap;z-index:10;
+  }
+  .map-tooltip.show{opacity:1;transform:translate(-50%,-140%) scale(1)}
+  .map-tooltip .tt-uf{color:#93c5fd;font-weight:800}
+  .map-tooltip .tt-name{color:#cbd5e1;font-size:11px;font-weight:500;margin-left:4px}
 
-  /* ============ UTM ============ */
+  .map-legend{
+    display:flex;align-items:center;justify-content:center;gap:20px;
+    flex-wrap:wrap;margin-top:16px;
+    padding-top:16px;border-top:1px solid var(--border);
+  }
+  .map-legend .litem{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;color:var(--text-2);font-weight:650;
+  }
+  .map-legend .litem i{
+    width:14px;height:14px;border-radius:4px;display:inline-block;
+    border:1px solid var(--border);
+  }
+
+  /* ============================================================
+     UTM
+     ============================================================ */
   .utm-header{
     display:flex;align-items:center;justify-content:space-between;
-    gap:12px;margin-bottom:14px;
+    gap:12px;margin-bottom:16px;
   }
   .utm-value{
-    font-size:20px;font-weight:800;color:var(--text);
-    letter-spacing:-.5px;
+    font-size:22px;font-weight:800;color:var(--text);
+    letter-spacing:-.6px;font-variant-numeric:tabular-nums;
   }
   .utm-source{
     background:var(--card-2);border:1px solid var(--border);
-    padding:7px 12px;border-radius:9px;
-    font-size:12px;font-weight:650;color:var(--text-2);
+    padding:8px 13px;border-radius:10px;
+    font-size:12.5px;font-weight:650;color:var(--text-2);
   }
 
-  /* ============ ÚLTIMAS VENDAS ============ */
+  /* ============================================================
+     ÚLTIMAS VENDAS
+     ============================================================ */
   .sales-list{display:flex;flex-direction:column;gap:8px}
   .sale-row{
     display:flex;align-items:center;gap:12px;
-    padding:12px 14px;background:var(--card-2);
-    border-radius:10px;
+    padding:13px 15px;background:var(--card-2);
+    border:1px solid var(--border);
+    border-radius:11px;
+    transition:background .15s,border-color .15s;
   }
+  .sale-row:hover{background:var(--card-hover);border-color:var(--border-2)}
   .sale-avatar{
-    width:34px;height:34px;border-radius:50%;
+    width:38px;height:38px;border-radius:50%;
     background:linear-gradient(135deg,#3b82f6,#8b5cf6);
     display:grid;place-items:center;
-    font-weight:800;font-size:13px;color:#fff;flex-shrink:0;
+    font-weight:800;font-size:14px;color:#fff;flex-shrink:0;
+    box-shadow:0 4px 10px -3px rgba(59,130,246,.4);
   }
   .sale-info{flex:1;min-width:0}
-  .sale-info .name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .sale-info .time{font-size:11.5px;color:var(--muted);margin-top:1px}
-  .sale-amount{font-size:14px;font-weight:750;color:var(--green)}
+  .sale-info .name{
+    font-size:13.5px;font-weight:700;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .sale-info .time{font-size:11.5px;color:var(--text-3);margin-top:2px}
+  .sale-amount{
+    font-size:14.5px;font-weight:800;color:var(--green);
+    font-variant-numeric:tabular-nums;letter-spacing:-.2px;
+  }
 
-  /* ============ SKELETON / EMPTY ============ */
+  /* ============================================================
+     EMPTY STATE
+     ============================================================ */
   .empty-state{
-    padding:34px 20px;text-align:center;color:var(--muted);
+    padding:36px 20px;text-align:center;
   }
   .empty-state .ico{
-    width:44px;height:44px;border-radius:12px;
+    width:48px;height:48px;border-radius:13px;
     background:var(--card-2);border:1px solid var(--border);
     display:grid;place-items:center;
-    margin:0 auto 12px;color:var(--muted-2);
+    margin:0 auto 12px;color:var(--muted);
   }
-  .empty-state .ico svg{width:20px;height:20px}
-  .empty-state .msg{font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:3px}
-  .empty-state .sub{font-size:12px;color:var(--muted-2)}
+  .empty-state .ico svg{width:22px;height:22px}
+  .empty-state .msg{
+    font-size:13.5px;color:var(--text-2);font-weight:700;
+    margin-bottom:4px;
+  }
+  .empty-state .sub{font-size:12.5px;color:var(--muted)}
+
+  /* ============================================================
+     VALUES HIDDEN
+     ============================================================ */
+  .hide-values .stat-value,
+  .hide-values .gauge-center .val,
+  .hide-values .state-revenue,
+  .hide-values .utm-value,
+  .hide-values .sale-amount,
+  .hide-values .mini-table td.right,
+  .hide-values .gauge-legend strong{
+    filter:blur(6px);
+    user-select:none;
+  }
+  .hide-values .mini-table td.right{color:var(--text-3)}
 </style>
 </head>
 <body>
 
-<!-- ============ CABEÇALHO ============ -->
+<!-- ============================================================
+     CABEÇALHO
+     ============================================================ -->
 <header class="page-head">
   <h1>Dashboard</h1>
   <p>Análises e informações de rendimentos</p>
 
   <div class="head-actions">
-    <button class="date-filter" id="dateFilter">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <path d="M16 2v4M8 2v4M3 10h18"/>
-      </svg>
-      <span id="dateLabel">Hoje</span>
-    </button>
-    <button class="eye-btn" id="toggleValues" title="Mostrar / ocultar valores">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="dropdown" id="periodDropdown">
+      <button class="filter-trigger" id="periodTrigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+        <span id="periodLabel">Hoje</span>
+        <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      </button>
+      <div class="dropdown-menu" id="periodMenu">
+        <div class="dropdown-item active" data-period="today">
+          Hoje
+          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="dropdown-item" data-period="7d">
+          Últimos 7 dias
+          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="dropdown-item" data-period="30d">
+          Últimos 30 dias
+          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="dropdown-item" data-period="all">
+          Todo o período
+          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <button class="eye-btn" id="toggleValues" title="Ocultar / mostrar valores">
+      <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
         <circle cx="12" cy="12" r="3"/>
       </svg>
@@ -449,8 +654,10 @@
   </div>
 </header>
 
-<!-- ============ CARDS DE STATS ============ -->
-<section class="stats-grid" id="statsGrid">
+<!-- ============================================================
+     KPIs
+     ============================================================ -->
+<section class="stats-grid">
   <div class="stat-card">
     <div class="stat-top">
       <div class="stat-ico blue">
@@ -462,11 +669,11 @@
     </div>
     <div class="stat-value" data-stat="revenue">R$ 0,00</div>
     <div class="stat-bottom">
-      <span class="delta up" data-delta="revenue">
+      <span class="delta neutral" data-delta="revenue">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         0%
       </span>
-      <span class="delta-ref">R$ 0,00</span>
+      <span class="delta-ref" data-ref="revenue">R$ 0,00</span>
     </div>
   </div>
 
@@ -482,11 +689,11 @@
     </div>
     <div class="stat-value" data-stat="sales">0</div>
     <div class="stat-bottom">
-      <span class="delta up" data-delta="sales">
+      <span class="delta neutral" data-delta="sales">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         0%
       </span>
-      <span class="delta-ref">0</span>
+      <span class="delta-ref" data-ref="sales">0</span>
     </div>
   </div>
 
@@ -502,11 +709,11 @@
     </div>
     <div class="stat-value" data-stat="ticket">R$ 0,00</div>
     <div class="stat-bottom">
-      <span class="delta up" data-delta="ticket">
+      <span class="delta neutral" data-delta="ticket">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         0%
       </span>
-      <span class="delta-ref">R$ 0,00</span>
+      <span class="delta-ref" data-ref="ticket">R$ 0,00</span>
     </div>
   </div>
 
@@ -522,23 +729,25 @@
     </div>
     <div class="stat-value" data-stat="visits">0</div>
     <div class="stat-bottom">
-      <span class="delta up" data-delta="visits">
+      <span class="delta neutral" data-delta="visits">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         0%
       </span>
-      <span class="delta-ref">0</span>
+      <span class="delta-ref" data-ref="visits">0</span>
     </div>
   </div>
 </section>
 
-<!-- ============ PERFORMANCE ============ -->
+<!-- ============================================================
+     PERFORMANCE
+     ============================================================ -->
 <section class="card">
   <div class="card-head">
     <div>
       <h3>Visão geral de Performance</h3>
       <div class="sub">Acompanhe os principais indicadores do período</div>
     </div>
-    <button class="filter-btn">
+    <button class="ghost-btn">
       <span>Filtrar</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 6h18M6 12h12M10 18h4"/>
@@ -556,13 +765,21 @@
   <div class="chart-wrap"><canvas id="chartPerformance"></canvas></div>
 </section>
 
-<!-- ============ CLIENTES ============ -->
+<!-- ============================================================
+     CLIENTES
+     ============================================================ -->
 <section class="card">
   <div class="card-head">
     <div>
       <h3>Clientes</h3>
       <div class="sub">Recorrentes vs. únicos no período</div>
     </div>
+    <button class="ghost-btn">
+      <span>Filtrar</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18M6 12h12M10 18h4"/>
+      </svg>
+    </button>
   </div>
 
   <div class="chart-legend">
@@ -573,7 +790,9 @@
   <div class="chart-wrap"><canvas id="chartClients"></canvas></div>
 </section>
 
-<!-- ============ FATURAMENTO DE PRODUTOS ============ -->
+<!-- ============================================================
+     FATURAMENTO POR PRODUTO
+     ============================================================ -->
 <section class="card">
   <div class="card-head">
     <div>
@@ -587,7 +806,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
       </svg>
-      <input type="text" id="productSearch" placeholder="Pesquisar produto...">
+      <input type="text" id="productSearch" placeholder="Pesquisar">
     </div>
     <select class="select-cat" id="productFilter">
       <option value="">Produtos</option>
@@ -600,17 +819,23 @@
     <thead>
       <tr>
         <th>Nome</th>
-        <th class="right"><span class="sort" data-sort="qty">Quantidade
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg>
-        </span></th>
-        <th class="right"><span class="sort" data-sort="value">Valor
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg>
-        </span></th>
+        <th class="right">
+          <span class="sort" data-sort="qty">
+            Quantidade
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg>
+          </span>
+        </th>
+        <th class="right">
+          <span class="sort" data-sort="value">
+            Valor
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg>
+          </span>
+        </th>
       </tr>
     </thead>
     <tbody id="productsTableBody">
       <tr><td colspan="3">
-        <div class="empty-state" style="padding:22px 10px">
+        <div class="empty-state" style="padding:24px 10px">
           <div class="sub">Nenhuma informação encontrada</div>
         </div>
       </td></tr>
@@ -618,7 +843,9 @@
   </table>
 </section>
 
-<!-- ============ CONVERSÃO + MÉTODOS ============ -->
+<!-- ============================================================
+     CONVERSÃO + MÉTODOS
+     ============================================================ -->
 <div class="grid-2">
   <section class="card">
     <div class="card-head">
@@ -626,7 +853,7 @@
         <h3>Conversão</h3>
         <div class="sub">Aprovados vs. expirados</div>
       </div>
-      <button class="filter-btn" style="font-size:12px;padding:6px 10px">
+      <button class="ghost-btn" style="padding:6px 11px">
         <span>Ver pedidos</span>
       </button>
     </div>
@@ -646,7 +873,7 @@
           Aprovados <strong id="convApproved">0%</strong>
         </div>
         <div class="item">
-          <i style="background:#5c5e6a"></i>
+          <i style="background:#cbd5e1"></i>
           Expirados <strong id="convExpired">0%</strong>
         </div>
       </div>
@@ -687,14 +914,16 @@
   </section>
 </div>
 
-<!-- ============ VENDAS POR ESTADO ============ -->
+<!-- ============================================================
+     VENDAS POR ESTADO
+     ============================================================ -->
 <section class="card">
   <div class="card-head">
     <div>
       <h3>Vendas por Estado</h3>
       <div class="sub">Distribuição geográfica das vendas</div>
     </div>
-    <button class="filter-btn">
+    <button class="ghost-btn">
       <span>Filtrar</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 6h18M6 12h12M10 18h4"/>
@@ -705,57 +934,123 @@
   <div class="state-list" id="stateList"></div>
 </section>
 
-<!-- ============ MAPA ============ -->
+<!-- ============================================================
+     MAPA DO BRASIL
+     ============================================================ -->
 <section class="card">
   <div class="card-head">
     <div>
       <h3>Mapa Geográfico</h3>
-      <div class="sub">Clique em um estado para filtrar</div>
+      <div class="sub">Clique em um estado para ver detalhes</div>
     </div>
   </div>
 
   <div class="map-wrap">
-    <!-- Mapa do Brasil simplificado (SVG) — cores aplicadas via CSS -->
-    <svg viewBox="0 0 500 480" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa do Brasil">
-      <g id="brazil-map">
-        <!-- Região Norte -->
-        <path data-uf="AC" d="M60,235 L95,225 L120,240 L125,270 L110,295 L75,290 L55,265 Z"/>
-        <path data-uf="AM" d="M95,180 L160,165 L230,180 L250,215 L225,245 L175,250 L125,240 L95,225 Z"/>
-        <path data-uf="RO" d="M125,270 L175,260 L200,285 L190,320 L155,330 L120,310 Z"/>
-        <path data-uf="RR" d="M135,110 L200,105 L230,140 L210,175 L160,180 L130,155 Z"/>
-        <path data-uf="PA" d="M230,140 L320,140 L340,180 L320,230 L250,245 L225,220 L250,215 L230,180 Z"/>
-        <path data-uf="AP" d="M320,140 L370,135 L385,165 L360,190 L340,180 Z"/>
-        <path data-uf="TO" d="M290,240 L330,235 L345,285 L330,335 L290,340 L270,300 Z"/>
-        <!-- Região Nordeste -->
-        <path data-uf="MA" d="M330,180 L385,175 L410,200 L395,235 L340,235 L320,230 Z"/>
-        <path data-uf="PI" d="M340,235 L395,235 L405,270 L385,300 L345,295 L335,270 Z"/>
-        <path data-uf="CE" d="M385,190 L420,185 L435,215 L420,240 L395,235 L385,220 Z"/>
-        <path data-uf="RN" d="M420,185 L445,190 L450,205 L435,215 L415,205 Z"/>
-        <path data-uf="PB" d="M420,210 L445,208 L450,222 L435,232 L418,228 Z"/>
-        <path data-uf="PE" d="M400,240 L440,238 L450,258 L435,275 L405,270 Z"/>
-        <path data-uf="AL" d="M415,278 L438,278 L445,295 L430,308 L412,300 Z"/>
-        <path data-uf="SE" d="M395,300 L425,300 L430,315 L410,325 L392,318 Z"/>
-        <path data-uf="BA" d="M340,295 L385,300 L405,320 L420,360 L400,395 L355,400 L320,365 L315,330 Z"/>
-        <!-- Região Centro-Oeste -->
-        <path data-uf="MT" d="M200,285 L270,275 L290,315 L280,360 L235,375 L200,340 Z"/>
-        <path data-uf="MS" d="M200,380 L245,375 L265,415 L250,445 L215,445 L195,415 Z"/>
-        <path data-uf="GO" d="M280,315 L330,300 L355,335 L350,380 L310,395 L280,360 Z"/>
-        <path data-uf="DF" d="M330,360 L345,355 L350,370 L338,378 Z"/>
-        <!-- Região Sudeste -->
-        <path data-uf="MG" d="M320,365 L355,355 L385,375 L385,415 L350,435 L320,410 Z"/>
-        <path data-uf="ES" d="M385,375 L405,370 L420,395 L405,415 L385,410 Z"/>
-        <path data-uf="RJ" d="M355,440 L385,432 L395,448 L380,462 L358,455 Z"/>
-        <path data-uf="SP" d="M285,415 L325,408 L350,432 L340,460 L300,465 L280,440 Z"/>
-        <!-- Região Sul -->
-        <path data-uf="PR" d="M265,460 L310,458 L330,470 L310,485 L275,485 Z"/>
-        <path data-uf="SC" d="M285,490 L320,485 L330,500 L310,515 L288,510 Z"/>
-        <path data-uf="RS" d="M260,505 L300,510 L310,540 L280,565 L255,545 Z"/>
-      </g>
-    </svg>
+    <div class="map-container" id="mapContainer">
+      <div class="map-tooltip" id="mapTooltip">
+        <span class="tt-uf"></span>
+        <span class="tt-name"></span>
+      </div>
+      <svg viewBox="0 0 620 640" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa do Brasil">
+        <!-- REGIÃO NORTE -->
+        <path class="state" data-uf="RR" d="M172,72 L232,58 L272,78 L282,116 L262,148 L214,152 L170,128 L158,96 Z"/>
+        <text class="state-label" x="218" y="108">RR</text>
+
+        <path class="state" data-uf="AP" d="M282,116 L332,108 L348,138 L338,168 L300,176 L282,152 Z"/>
+        <text class="state-label" x="314" y="146">AP</text>
+
+        <path class="state" data-uf="AM" d="M96,180 L172,152 L262,148 L300,176 L324,220 L306,268 L246,290 L172,286 L116,254 L88,220 Z"/>
+        <text class="state-label" x="200" y="222">AM</text>
+
+        <path class="state" data-uf="PA" d="M332,152 L410,150 L448,178 L456,220 L432,272 L366,290 L316,272 L324,220 L348,168 Z"/>
+        <text class="state-label" x="384" y="218">PA</text>
+
+        <path class="state" data-uf="AC" d="M62,252 L108,238 L134,256 L138,300 L116,338 L74,340 L56,308 Z"/>
+        <text class="state-label" x="96" y="290">AC</text>
+
+        <path class="state" data-uf="RO" d="M138,300 L196,282 L228,308 L222,358 L184,378 L142,354 Z"/>
+        <text class="state-label" x="182" y="328">RO</text>
+
+        <path class="state" data-uf="TO" d="M340,296 L404,282 L428,318 L424,382 L392,428 L346,414 L328,360 Z"/>
+        <text class="state-label" x="376" y="352">TO</text>
+
+        <!-- REGIÃO NORDESTE -->
+        <path class="state" data-uf="MA" d="M410,178 L468,172 L502,198 L498,248 L456,272 L432,272 L456,220 Z"/>
+        <text class="state-label" x="454" y="222">MA</text>
+
+        <path class="state" data-uf="PI" d="M432,272 L498,258 L516,290 L508,340 L466,354 L432,332 L424,300 Z"/>
+        <text class="state-label" x="466" y="308">PI</text>
+
+        <path class="state" data-uf="CE" d="M478,196 L530,190 L554,222 L542,258 L500,258 L488,232 Z"/>
+        <text class="state-label" x="514" y="228">CE</text>
+
+        <path class="state" data-uf="RN" d="M530,190 L562,192 L572,216 L550,236 L526,228 Z"/>
+        <text class="state-label" x="550" y="214">RN</text>
+
+        <path class="state" data-uf="PB" d="M534,232 L568,228 L576,250 L556,266 L530,260 Z"/>
+        <text class="state-label" x="552" y="250">PB</text>
+
+        <path class="state" data-uf="PE" d="M508,266 L560,258 L576,284 L558,312 L518,316 L498,290 Z"/>
+        <text class="state-label" x="536" y="288">PE</text>
+
+        <path class="state" data-uf="AL" d="M528,320 L562,320 L572,342 L554,362 L528,356 Z"/>
+        <text class="state-label" x="548" y="340">AL</text>
+
+        <path class="state" data-uf="SE" d="M498,360 L530,364 L536,384 L512,400 L488,390 Z"/>
+        <text class="state-label" x="510" y="380">SE</text>
+
+        <path class="state" data-uf="BA" d="M424,340 L466,354 L508,340 L528,372 L530,430 L494,486 L440,500 L392,478 L378,428 L392,382 Z"/>
+        <text class="state-label" x="452" y="420">BA</text>
+
+        <!-- REGIÃO CENTRO-OESTE -->
+        <path class="state" data-uf="MT" d="M228,308 L288,300 L336,336 L348,392 L322,452 L268,470 L228,442 L216,378 Z"/>
+        <text class="state-label" x="282" y="386">MT</text>
+
+        <path class="state" data-uf="MS" d="M268,470 L322,452 L350,486 L346,540 L312,572 L268,562 L244,520 Z"/>
+        <text class="state-label" x="300" y="512">MS</text>
+
+        <path class="state" data-uf="GO" d="M348,392 L404,368 L442,396 L446,446 L416,486 L374,486 L348,452 Z"/>
+        <text class="state-label" x="394" y="428">GO</text>
+
+        <path class="state" data-uf="DF" d="M400,428 L422,424 L428,442 L410,452 Z"/>
+        <text class="state-label" x="414" y="438" style="font-size:7px">DF</text>
+
+        <!-- REGIÃO SUDESTE -->
+        <path class="state" data-uf="MG" d="M374,486 L442,470 L494,486 L504,532 L472,572 L416,572 L372,540 L360,504 Z"/>
+        <text class="state-label" x="434" y="522">MG</text>
+
+        <path class="state" data-uf="ES" d="M504,486 L540,484 L552,512 L532,540 L502,532 Z"/>
+        <text class="state-label" x="524" y="512">ES</text>
+
+        <path class="state" data-uf="RJ" d="M456,578 L500,568 L522,586 L512,606 L472,608 L448,596 Z"/>
+        <text class="state-label" x="484" y="592">RJ</text>
+
+        <path class="state" data-uf="SP" d="M356,578 L416,572 L456,578 L448,616 L416,626 L368,624 L346,606 Z"/>
+        <text class="state-label" x="400" y="600">SP</text>
+
+        <!-- REGIÃO SUL -->
+        <path class="state" data-uf="PR" d="M312,572 L368,578 L388,596 L368,620 L316,620 L296,604 Z"/>
+        <text class="state-label" x="342" y="598">PR</text>
+
+        <path class="state" data-uf="SC" d="M330,626 L376,624 L386,646 L368,664 L334,662 L318,646 Z"/>
+        <text class="state-label" x="352" y="644">SC</text>
+
+        <path class="state" data-uf="RS" d="M288,610 L318,646 L334,668 L322,700 L288,706 L268,676 L268,632 Z"/>
+        <text class="state-label" x="298" y="660">RS</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="map-legend">
+    <div class="litem"><i style="background:#e2e8f0"></i>Sem vendas</div>
+    <div class="litem"><i style="background:#3b82f6"></i>Com vendas</div>
+    <div class="litem"><i style="background:#93c5fd"></i>Estado em destaque</div>
   </div>
 </section>
 
-<!-- ============ UTM ============ -->
+<!-- ============================================================
+     UTM
+     ============================================================ -->
 <section class="card">
   <div class="card-head">
     <div>
@@ -770,14 +1065,16 @@
   </div>
 
   <div id="utmList">
-    <div class="empty-state" style="padding:20px 10px">
+    <div class="empty-state" style="padding:22px 10px">
       <div class="msg">Nenhum UTM encontrado</div>
       <div class="sub">Os dados aparecerão quando houver tráfego rastreado.</div>
     </div>
   </div>
 </section>
 
-<!-- ============ ÚLTIMAS VENDAS ============ -->
+<!-- ============================================================
+     ÚLTIMAS VENDAS
+     ============================================================ -->
 <section class="card">
   <div class="card-head">
     <div>
@@ -787,7 +1084,7 @@
   </div>
 
   <div class="sales-list" id="lastSalesList">
-    <div class="empty-state" style="padding:20px 10px">
+    <div class="empty-state" style="padding:22px 10px">
       <div class="msg">Nenhuma venda encontrada</div>
       <div class="sub">As vendas aparecerão aqui assim que acontecerem.</div>
     </div>
@@ -795,9 +1092,9 @@
 </section>
 
 <script>
-/* =========================================================
-   CONFIGURAÇÕES
-   ========================================================= */
+/* ============================================================
+   CONFIGURAÇÃO
+   ============================================================ */
 const STORAGE_KEYS = {
   products: 'store_products',
   orders:   'store_orders',
@@ -807,7 +1104,8 @@ const STORAGE_KEYS = {
   visits:   'store_visits'
 };
 
-const STATE_FLAGS_PATH = 'assets/flags/'; // pasta onde você coloca as imagens
+const FLAGS_PATH = 'assets/flags/';
+
 const STATES = [
   { uf:'AC', name:'Acre' },
   { uf:'AL', name:'Alagoas' },
@@ -838,10 +1136,11 @@ const STATES = [
   { uf:'TO', name:'Tocantins' }
 ];
 
-/* =========================================================
-   UTILITÁRIOS
-   ========================================================= */
+/* ============================================================
+   HELPERS
+   ============================================================ */
 const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
 const brl = n => Number(n || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const getStore = (key, def) => {
@@ -851,9 +1150,9 @@ const getStore = (key, def) => {
   } catch(e){ return def; }
 };
 
-/* =========================================================
-   ESTADO — lê do localStorage (sem dados falsos)
-   ========================================================= */
+/* ============================================================
+   ESTADO
+   ============================================================ */
 let products = getStore(STORAGE_KEYS.products, []);
 let orders   = getStore(STORAGE_KEYS.orders, []);
 let users    = getStore(STORAGE_KEYS.users, []);
@@ -861,142 +1160,184 @@ let pixTxs   = getStore(STORAGE_KEYS.pixTxs, []);
 let utms     = getStore(STORAGE_KEYS.utms, []);
 let visits   = getStore(STORAGE_KEYS.visits, []);
 
-/* =========================================================
-   ESTADO DE UI
-   ========================================================= */
-let hideValues = false;
 let currentPeriod = 'today';
+let hideValues = false;
+let selectedState = null;
+let productSort = { field: 'qty', dir: 'desc' };
 
-/* =========================================================
-   DASHBOARD — KPIs
-   ========================================================= */
-function filterOrdersByPeriod(list, period){
+/* ============================================================
+   PERÍODO
+   ============================================================ */
+const PERIOD_LABELS = {
+  today: 'Hoje',
+  '7d': 'Últimos 7 dias',
+  '30d': 'Últimos 30 dias',
+  all: 'Todo o período'
+};
+
+function filterByPeriod(list, period){
+  if (period === 'all') return list.slice();
   const now = new Date();
   return list.filter(o => {
     const d = new Date(o.date || o.createdAt);
+    if (isNaN(d.getTime())) return false;
     if (period === 'today') {
       return d.toDateString() === now.toDateString();
     }
-    if (period === 'week') {
-      const diff = (now - d) / (1000 * 60 * 60 * 24);
+    if (period === '7d') {
+      const diff = (now - d) / (1000*60*60*24);
       return diff <= 7;
     }
-    if (period === 'month') {
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    if (period === '30d') {
+      const diff = (now - d) / (1000*60*60*24);
+      return diff <= 30;
     }
-    if (period === 'all') return true;
     return true;
   });
 }
 
 function paidOrders(list){
-  return list.filter(o => (o.status || '').toLowerCase() === 'paid' || o.status === 'approved');
+  return list.filter(o => {
+    const s = (o.status || '').toLowerCase();
+    return s === 'paid' || s === 'approved' || s === 'aprovado';
+  });
 }
 
+/* ============================================================
+   KPIs
+   ============================================================ */
 function renderKPIs(){
-  const filtered = filterOrdersByPeriod(orders, currentPeriod);
+  const filtered = filterByPeriod(orders, currentPeriod);
   const paid = paidOrders(filtered);
 
   const revenue = paid.reduce((s, o) => s + (Number(o.valor) || Number(o.amount) || 0), 0);
   const salesCount = paid.length;
   const ticket = salesCount ? revenue / salesCount : 0;
-  const totalVisits = filterOrdersByPeriod(visits, currentPeriod).length ||
-                      (users.length ? users.length : 0);
+  const totalVisits = filterByPeriod(visits, currentPeriod).length ||
+                      filterByPeriod(users, currentPeriod).length;
 
   setStat('revenue', brl(revenue));
   setStat('sales', String(salesCount));
   setStat('ticket', brl(ticket));
   setStat('visits', String(totalVisits));
+
+  // Deltas e refs ficam neutros por padrão (sem histórico comparativo ainda)
+  setDelta('revenue', '0%', 'neutral', brl(0));
+  setDelta('sales', '0%', 'neutral', '0');
+  setDelta('ticket', '0%', 'neutral', brl(0));
+  setDelta('visits', '0%', 'neutral', '0');
 }
 
 function setStat(key, value){
   const el = document.querySelector(`[data-stat="${key}"]`);
-  if (!el) return;
-  el.textContent = hideValues && /R\$/.test(value) ? '••••' : value;
+  if (el) el.textContent = value;
 }
 
-/* =========================================================
+function setDelta(key, text, type, ref){
+  const d = document.querySelector(`[data-delta="${key}"]`);
+  if (d) {
+    d.classList.remove('up','down','neutral');
+    d.classList.add(type);
+    const svg = type === 'up' ? 'M12 19V5M5 12l7-7 7 7' :
+                type === 'down' ? 'M12 5v14M19 12l-7 7-7-7' :
+                'M5 12h14';
+    d.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="${svg}"/></svg>
+      ${text}`;
+  }
+  const r = document.querySelector(`[data-ref="${key}"]`);
+  if (r) r.textContent = ref;
+}
+
+/* ============================================================
    GRÁFICO: PERFORMANCE
-   ========================================================= */
+   ============================================================ */
 let chartPerf, chartClients, chartConv;
 
 function buildPerformanceChart(){
-  const ctx = document.getElementById('chartPerformance');
-  if (!ctx) return;
+  const canvas = document.getElementById('chartPerformance');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
 
-  // Agrupa por hora do dia (00h às 23h)
-  const hours = [];
-  for (let i = 0; i < 24; i++) hours.push(String(i).padStart(2,'0') + ':00');
-
-  const filtered = filterOrdersByPeriod(orders, currentPeriod);
-  const paid = paidOrders(filtered);
-
-  const revByHour = new Array(24).fill(0);
+  const labels = [];
+  const revenueByHour = new Array(24).fill(0);
   const salesByHour = new Array(24).fill(0);
   const visitsByHour = new Array(24).fill(0);
 
+  for (let h = 0; h < 24; h++) {
+    labels.push(String(h).padStart(2,'0') + ':00');
+  }
+
+  const filtered = filterByPeriod(orders, currentPeriod);
+  const paid = paidOrders(filtered);
+
   paid.forEach(o => {
-    const h = new Date(o.date || o.createdAt).getHours();
-    revByHour[h] += Number(o.valor) || 0;
+    const d = new Date(o.date || o.createdAt);
+    const h = d.getHours();
+    revenueByHour[h] += Number(o.valor) || 0;
     salesByHour[h] += 1;
   });
-  filterOrdersByPeriod(visits, currentPeriod).forEach(v => {
-    const h = new Date(v.date).getHours();
-    visitsByHour[h] += 1;
+  filterByPeriod(visits, currentPeriod).forEach(v => {
+    const d = new Date(v.date);
+    visitsByHour[d.getHours()] += 1;
   });
 
-  Chart.defaults.color = '#8b8d98';
+  Chart.defaults.color = '#94a3b8';
   Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
   Chart.defaults.font.size = 11;
 
   if (chartPerf) chartPerf.destroy();
 
-  chartPerf = new Chart(ctx, {
+  const gradGreen = ctx.createLinearGradient(0,0,0,250);
+  gradGreen.addColorStop(0,'rgba(16,185,129,.18)');
+  gradGreen.addColorStop(1,'rgba(16,185,129,0)');
+
+  chartPerf = new Chart(canvas, {
     type: 'line',
     data: {
-      labels: hours,
+      labels,
       datasets: [
         {
           label: 'Faturamento',
-          data: revByHour,
+          data: revenueByHour,
           borderColor: '#10b981',
-          backgroundColor: 'rgba(16,185,129,.08)',
-          borderWidth: 2,
+          backgroundColor: gradGreen,
+          borderWidth: 2.5,
           tension: 0.4,
           fill: true,
           pointRadius: 0,
           pointHoverRadius: 6,
           pointHoverBackgroundColor: '#10b981',
-          pointHoverBorderColor: '#0a0b0f',
-          pointHoverBorderWidth: 2,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 3,
           yAxisID: 'y'
         },
         {
           label: 'Vendas',
           data: salesByHour,
           borderColor: '#3b82f6',
-          borderWidth: 2,
+          borderWidth: 2.5,
           tension: 0.4,
           fill: false,
           pointRadius: 0,
           pointHoverRadius: 6,
           pointHoverBackgroundColor: '#3b82f6',
-          pointHoverBorderColor: '#0a0b0f',
-          pointHoverBorderWidth: 2,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 3,
           yAxisID: 'y1'
         },
         {
           label: 'Visitas',
           data: visitsByHour,
           borderColor: '#f59e0b',
-          borderWidth: 2,
+          borderWidth: 2.5,
           tension: 0.4,
           fill: false,
           pointRadius: 0,
           pointHoverRadius: 6,
           pointHoverBackgroundColor: '#f59e0b',
-          pointHoverBorderColor: '#0a0b0f',
-          pointHoverBorderWidth: 2,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 3,
           yAxisID: 'y1'
         }
       ]
@@ -1007,38 +1348,40 @@ function buildPerformanceChart(){
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#171821',
-          borderColor: '#1f2029',
-          borderWidth: 1,
-          padding: 10,
-          cornerRadius: 8,
-          titleColor: '#e8e9ed',
-          bodyColor: '#b8bac4',
+          backgroundColor: '#0f172a',
+          borderColor: '#1e293b',
+          borderWidth: 0,
+          padding: 12,
+          cornerRadius: 10,
+          titleColor: '#f8fafc',
+          bodyColor: '#cbd5e1',
           titleFont: { size: 12, weight: '700' },
           bodyFont: { size: 12 },
+          displayColors: true,
+          boxPadding: 5,
           callbacks: {
-            label: ctx => {
-              if (ctx.dataset.label === 'Faturamento') return 'Faturamento: ' + brl(ctx.parsed.y);
-              return ctx.dataset.label + ': ' + ctx.parsed.y;
+            label: c => {
+              if (c.dataset.label === 'Faturamento') return ' ' + c.dataset.label + ': ' + brl(c.parsed.y);
+              return ' ' + c.dataset.label + ': ' + c.parsed.y;
             }
           }
         }
       },
       scales: {
         x: {
-          grid: { color: '#1a1b23', drawBorder: false },
-          ticks: { color: '#5c5e6a', maxRotation: 0, autoSkip: true, maxTicksLimit: 8, padding: 6 }
+          grid: { display: false, drawBorder: false },
+          ticks: { color: '#94a3b8', maxRotation: 0, autoSkip: true, maxTicksLimit: 7, padding: 8 }
         },
         y: {
           position: 'left',
-          grid: { color: '#1a1b23', drawBorder: false },
-          ticks: { color: '#5c5e6a', callback: v => 'R$ ' + v, padding: 6 },
+          grid: { color: '#f1f5f9', drawBorder: false },
+          ticks: { color: '#94a3b8', padding: 8, callback: v => 'R$ ' + v },
           beginAtZero: true
         },
         y1: {
           position: 'right',
-          grid: { display: false },
-          ticks: { color: '#5c5e6a', precision: 0, padding: 6 },
+          grid: { display: false, drawBorder: false },
+          ticks: { color: '#94a3b8', precision: 0, padding: 8 },
           beginAtZero: true
         }
       }
@@ -1046,66 +1389,86 @@ function buildPerformanceChart(){
   });
 }
 
-/* =========================================================
+/* ============================================================
    GRÁFICO: CLIENTES
-   ========================================================= */
+   ============================================================ */
 function buildClientsChart(){
-  const ctx = document.getElementById('chartClients');
-  if (!ctx) return;
+  const canvas = document.getElementById('chartClients');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
 
-  const filteredOrders = filterOrdersByPeriod(orders, currentPeriod);
+  const filtered = filterByPeriod(orders, currentPeriod);
 
-  // Agrupa clientes por dia
   const daysMap = {};
-  filteredOrders.forEach(o => {
+  filtered.forEach(o => {
     const d = new Date(o.date || o.createdAt);
     const key = d.toISOString().slice(0,10);
-    if (!daysMap[key]) daysMap[key] = { recurrent: 0, unique: 0, countMap: {} };
+    if (!daysMap[key]) daysMap[key] = { recurrent: {}, unique: {} };
     const cid = o.customerId || o.customer || 'anon';
-    daysMap[key].countMap[cid] = (daysMap[key].countMap[cid] || 0) + 1;
+    daysMap[key].unique[cid] = (daysMap[key].unique[cid] || 0) + 1;
   });
 
   const sortedKeys = Object.keys(daysMap).sort();
-  const labels = sortedKeys.length ? sortedKeys.map(k => {
+  const labels = sortedKeys.map(k => {
     const d = new Date(k + 'T00:00:00');
     return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' });
-  }) : [];
-  const recurrent = sortedKeys.map(k => Object.values(daysMap[k].countMap).filter(v => v > 1).length);
-  const unique = sortedKeys.map(k => Object.keys(daysMap[k].countMap).length);
+  });
+
+  const recurrent = sortedKeys.map(k => Object.values(daysMap[k].unique).filter(v => v > 1).length);
+  const unique = sortedKeys.map(k => Object.keys(daysMap[k].unique).length);
 
   const totalRecurrent = recurrent.reduce((s, v) => s + v, 0);
   const totalUnique = unique.reduce((s, v) => s + v, 0);
-  $('#clientsRecurrent').textContent = totalRecurrent;
-  $('#clientsUnique').textContent = totalUnique;
+
+  document.getElementById('clientsRecurrent').textContent = totalRecurrent;
+  document.getElementById('clientsUnique').textContent = totalUnique;
 
   if (chartClients) chartClients.destroy();
 
-  chartClients = new Chart(ctx, {
+  const gradGreen = ctx.createLinearGradient(0,0,0,250);
+  gradGreen.addColorStop(0,'rgba(16,185,129,.16)');
+  gradGreen.addColorStop(1,'rgba(16,185,129,0)');
+
+  const gradBlue = ctx.createLinearGradient(0,0,0,250);
+  gradBlue.addColorStop(0,'rgba(59,130,246,.16)');
+  gradBlue.addColorStop(1,'rgba(59,130,246,0)');
+
+  const labelsFinal = labels.length ? labels : ['Sem dados'];
+  const recurrentFinal = recurrent.length ? recurrent : [0];
+  const uniqueFinal = unique.length ? unique : [0];
+
+  chartClients = new Chart(canvas, {
     type: 'line',
     data: {
-      labels: labels.length ? labels : ['Sem dados'],
+      labels: labelsFinal,
       datasets: [
         {
           label: 'Recorrentes',
-          data: recurrent.length ? recurrent : [0],
+          data: recurrentFinal,
           borderColor: '#10b981',
-          backgroundColor: 'rgba(16,185,129,.08)',
-          borderWidth: 2,
+          backgroundColor: gradGreen,
+          borderWidth: 2.5,
           tension: 0.4,
           fill: true,
           pointRadius: 0,
-          pointHoverRadius: 6
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#10b981',
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 3
         },
         {
           label: 'Únicos',
-          data: unique.length ? unique : [0],
+          data: uniqueFinal,
           borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59,130,246,.08)',
-          borderWidth: 2,
+          backgroundColor: gradBlue,
+          borderWidth: 2.5,
           tension: 0.4,
           fill: true,
           pointRadius: 0,
-          pointHoverRadius: 6
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#3b82f6',
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 3
         }
       ]
     },
@@ -1115,23 +1478,24 @@ function buildClientsChart(){
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#171821',
-          borderColor: '#1f2029',
-          borderWidth: 1,
-          padding: 10,
-          cornerRadius: 8,
-          titleColor: '#e8e9ed',
-          bodyColor: '#b8bac4'
+          backgroundColor: '#0f172a',
+          padding: 12,
+          cornerRadius: 10,
+          titleColor: '#f8fafc',
+          bodyColor: '#cbd5e1',
+          titleFont: { size: 12, weight: '700' },
+          bodyFont: { size: 12 },
+          boxPadding: 5
         }
       },
       scales: {
         x: {
-          grid: { color: '#1a1b23', drawBorder: false },
-          ticks: { color: '#5c5e6a', padding: 6 }
+          grid: { display: false, drawBorder: false },
+          ticks: { color: '#94a3b8', padding: 8 }
         },
         y: {
-          grid: { color: '#1a1b23', drawBorder: false },
-          ticks: { color: '#5c5e6a', precision: 0, padding: 6 },
+          grid: { color: '#f1f5f9', drawBorder: false },
+          ticks: { color: '#94a3b8', precision: 0, padding: 8 },
           beginAtZero: true
         }
       }
@@ -1139,22 +1503,19 @@ function buildClientsChart(){
   });
 }
 
-/* =========================================================
-   TABELA: FATURAMENTO DE PRODUTOS
-   ========================================================= */
-let productSort = { field: 'qty', dir: 'desc' };
-
+/* ============================================================
+   FATURAMENTO POR PRODUTO
+   ============================================================ */
 function renderProductsTable(){
   const tbody = document.getElementById('productsTableBody');
   const search = (document.getElementById('productSearch').value || '').toLowerCase();
   const filter = document.getElementById('productFilter').value;
 
-  // Agrega vendas por produto
-  const paid = paidOrders(filterOrdersByPeriod(orders, currentPeriod));
+  const paid = paidOrders(filterByPeriod(orders, currentPeriod));
   const map = {};
 
   paid.forEach(o => {
-    const items = o.items || (o.productId ? [{ id: o.productId, name: o.productName, price: o.valor }] : []);
+    const items = o.items || (o.productId ? [{ id: o.productId, name: o.productName || 'Produto', price: o.valor }] : []);
     items.forEach(it => {
       const key = it.id || it.name || 'sem-id';
       if (!map[key]) map[key] = { name: it.name || 'Produto', qty: 0, value: 0 };
@@ -1165,9 +1526,7 @@ function renderProductsTable(){
 
   let list = Object.values(map);
 
-  if (search) {
-    list = list.filter(p => p.name.toLowerCase().includes(search));
-  }
+  if (search) list = list.filter(p => p.name.toLowerCase().includes(search));
 
   if (filter === 'top') list.sort((a,b) => b.qty - a.qty);
   else if (filter === 'low') list.sort((a,b) => a.qty - b.qty);
@@ -1182,9 +1541,14 @@ function renderProductsTable(){
 
   document.getElementById('productsRevenueCount').textContent = list.length;
 
+  // Atualiza setas ativas
+  $$('.mini-table th .sort').forEach(el => {
+    el.classList.toggle('active', el.dataset.sort === productSort.field);
+  });
+
   if (!list.length) {
     tbody.innerHTML = `<tr><td colspan="3">
-      <div class="empty-state" style="padding:22px 10px">
+      <div class="empty-state" style="padding:26px 10px">
         <div class="sub">Nenhuma informação encontrada</div>
       </div>
     </td></tr>`;
@@ -1195,45 +1559,48 @@ function renderProductsTable(){
     <tr>
       <td class="name">${escapeHtml(p.name)}</td>
       <td class="right">${p.qty}</td>
-      <td class="right">${hideValues ? '••••' : brl(p.value)}</td>
+      <td class="right">${brl(p.value)}</td>
     </tr>
   `).join('');
 }
 
-/* =========================================================
+/* ============================================================
    CONVERSÃO (GAUGE)
-   ========================================================= */
+   ============================================================ */
 function buildConversionChart(){
-  const ctx = document.getElementById('chartConversion');
-  if (!ctx) return;
+  const canvas = document.getElementById('chartConversion');
+  if (!canvas) return;
 
-  const filtered = paidOrders(filterOrdersByPeriod(orders, currentPeriod));
-  const approved = filtered.length;
-  const expired = filterOrdersByPeriod(orders, currentPeriod).filter(o => {
+  const filtered = filterByPeriod(orders, currentPeriod);
+  const paid = paidOrders(filtered);
+  const expired = filtered.filter(o => {
     const s = (o.status || '').toLowerCase();
     return s === 'expired' || s === 'cancelled' || s === 'rejected' || s === 'failed';
-  }).length;
-  const total = approved + expired;
-  const approvedPct = total ? Math.round((approved / total) * 100) : 0;
-  const expiredPct = total ? Math.round((expired / total) * 100) : 0;
+  });
 
-  const revenue = filtered.reduce((s, o) => s + (Number(o.valor) || 0), 0);
+  const approvedCount = paid.length;
+  const expiredCount = expired.length;
+  const total = approvedCount + expiredCount;
+  const approvedPct = total ? Math.round((approvedCount / total) * 100) : 0;
+  const expiredPct = total ? Math.round((expiredCount / total) * 100) : 0;
 
-  document.getElementById('gaugeValue').textContent = hideValues ? '••••' : brl(revenue);
+  const revenue = paid.reduce((s, o) => s + (Number(o.valor) || 0), 0);
+
+  document.getElementById('gaugeValue').textContent = brl(revenue);
   document.getElementById('convApproved').textContent = approvedPct + '%';
   document.getElementById('convExpired').textContent = expiredPct + '%';
 
   if (chartConv) chartConv.destroy();
 
-  chartConv = new Chart(ctx, {
+  chartConv = new Chart(canvas, {
     type: 'doughnut',
     data: {
       labels: ['Aprovados', 'Expirados'],
       datasets: [{
-        data: total ? [approved, expired] : [1, 1],
-        backgroundColor: total ? ['#10b981', '#2a2c36'] : ['#2a2c36', '#2a2c36'],
+        data: total ? [approvedCount, expiredCount] : [1, 1],
+        backgroundColor: total ? ['#10b981', '#cbd5e1'] : ['#e2e8f0', '#e2e8f0'],
         borderWidth: 0,
-        hoverOffset: 0
+        hoverOffset: 4
       }]
     },
     options: {
@@ -1244,17 +1611,22 @@ function buildConversionChart(){
       circumference: 180,
       plugins: {
         legend: { display: false },
-        tooltip: { enabled: false }
+        tooltip: {
+          backgroundColor: '#0f172a',
+          padding: 10,
+          cornerRadius: 8,
+          enabled: total > 0
+        }
       }
     }
   });
 }
 
-/* =========================================================
+/* ============================================================
    MÉTODOS E GATEWAYS
-   ========================================================= */
+   ============================================================ */
 function renderMethodsAndGateways(){
-  const paid = paidOrders(filterOrdersByPeriod(orders, currentPeriod));
+  const paid = paidOrders(filterByPeriod(orders, currentPeriod));
 
   const methods = {};
   const gateways = {};
@@ -1270,42 +1642,38 @@ function renderMethodsAndGateways(){
 
   const mList = document.getElementById('methodsList');
   const mEntries = Object.entries(methods);
-  if (!mEntries.length) {
-    mList.innerHTML = '<div class="empty-line">Nenhum método encontrado</div>';
-  } else {
-    mList.innerHTML = mEntries.map(([k,v]) => `
-      <div class="method-row">
-        <span class="name">${escapeHtml(methodLabels[k] || k)}</span>
-        <span class="count">${v}</span>
-      </div>
-    `).join('');
-  }
+  mList.innerHTML = mEntries.length
+    ? mEntries.map(([k,v]) => `
+        <div class="method-row">
+          <span class="name">${escapeHtml(methodLabels[k] || k)}</span>
+          <span class="count">${v}</span>
+        </div>`).join('')
+    : '<div class="empty-line">Nenhum método encontrado</div>';
 
   const gList = document.getElementById('gatewaysList');
   const gEntries = Object.entries(gateways);
-  if (!gEntries.length) {
-    gList.innerHTML = '<div class="empty-line">Nenhum gateway encontrado</div>';
-  } else {
-    gList.innerHTML = gEntries.map(([k,v]) => `
-      <div class="method-row">
-        <span class="name">${escapeHtml(gatewayLabels[k] || k)}</span>
-        <span class="count">${v}</span>
-      </div>
-    `).join('');
-  }
+  gList.innerHTML = gEntries.length
+    ? gEntries.map(([k,v]) => `
+        <div class="method-row">
+          <span class="name">${escapeHtml(gatewayLabels[k] || k)}</span>
+          <span class="count">${v}</span>
+        </div>`).join('')
+    : '<div class="empty-line">Nenhum gateway encontrado</div>';
 }
 
-/* =========================================================
+/* ============================================================
    VENDAS POR ESTADO
-   ========================================================= */
-function renderStates(){
-  const container = document.getElementById('stateList');
-  const paid = paidOrders(filterOrdersByPeriod(orders, currentPeriod));
+   ============================================================ */
+function getStateStats(){
+  const paid = paidOrders(filterByPeriod(orders, currentPeriod));
 
-  // Agrupa por estado (se o pedido tiver `state` = UF)
   const map = {};
   STATES.forEach(s => {
-    map[s.uf] = { uf:s.uf, name:s.name, sales:0, recurrent:0, unique:0, revenue:0, customers:{} };
+    map[s.uf] = {
+      uf: s.uf, name: s.name,
+      sales: 0, recurrent: 0, unique: 0,
+      revenue: 0, customers: {}
+    };
   });
 
   paid.forEach(o => {
@@ -1322,22 +1690,29 @@ function renderStates(){
     s.recurrent = Object.values(s.customers).filter(v => v > 1).length;
   });
 
-  // Ordena: com vendas primeiro, depois alfabético
+  return map;
+}
+
+function renderStates(){
+  const container = document.getElementById('stateList');
+  const map = getStateStats();
+
   const list = Object.values(map).sort((a,b) => {
     if (a.sales !== b.sales) return b.sales - a.sales;
-    return a.name.localeCompare(b.name);
+    return a.name.localeCompare(b.name, 'pt-BR');
   });
 
   container.innerHTML = list.map(s => {
-    const flagUrl = `${STATE_FLAGS_PATH}${s.uf}.png`;
+    const flagUrl = FLAGS_PATH + s.uf + '.png';
+    const selected = selectedState === s.uf ? 'style="border-color:#93c5fd;background:#fff"' : '';
     return `
-      <div class="state-item" data-uf="${s.uf}">
+      <div class="state-item" data-state="${s.uf}" ${selected}>
         <div class="state-top">
           <div class="state-flag">
             <img src="${flagUrl}" alt="${s.uf}" onerror="this.style.display='none'; this.parentElement.textContent='${s.uf}'">
           </div>
           <div class="state-name">${escapeHtml(s.name)}</div>
-          <div class="state-revenue">${hideValues ? '••••' : brl(s.revenue)}</div>
+          <div class="state-revenue">${brl(s.revenue)}</div>
         </div>
         <div class="state-stats">
           <div class="col">
@@ -1353,57 +1728,130 @@ function renderStates(){
             <span class="val purple">${s.unique}</span>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
-}
 
-/* =========================================================
-   MAPA DO BRASIL — destaca estados com vendas
-   ========================================================= */
-function renderMapHighlight(){
-  const paid = paidOrders(filterOrdersByPeriod(orders, currentPeriod));
-  const counts = {};
-  paid.forEach(o => {
-    const uf = (o.state || o.uf || '').toUpperCase();
-    if (uf) counts[uf] = (counts[uf] || 0) + 1;
-  });
-
-  const max = Math.max(1, ...Object.values(counts));
-
-  document.querySelectorAll('#brazil-map path').forEach(path => {
-    const uf = path.dataset.uf;
-    if (!uf) return;
-    const c = counts[uf] || 0;
-    if (c > 0) {
-      const intensity = 0.35 + (c / max) * 0.65;
-      path.style.fill = `rgba(59,130,246,${intensity.toFixed(2)})`;
-    } else {
-      path.style.fill = '';
-    }
-    path.addEventListener('click', () => {
-      if (c > 0) filterByState(uf);
+  container.querySelectorAll('.state-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const uf = el.dataset.state;
+      selectedState = selectedState === uf ? null : uf;
+      renderStates();
+      highlightMap(selectedState);
     });
   });
 }
 
-function filterByState(uf){
-  const name = STATES.find(s => s.uf === uf)?.name || uf;
-  alert(`Filtrar por estado: ${name} (${uf})`);
+/* ============================================================
+   MAPA DO BRASIL
+   ============================================================ */
+function highlightMap(selectedUf){
+  const map = getStateStats();
+  const maxSales = Math.max(1, ...Object.values(map).map(s => s.sales));
+
+  $$('#mapContainer svg .state').forEach(path => {
+    const uf = path.dataset.uf;
+    const stats = map[uf];
+    path.classList.remove('has-sales', 'selected');
+    if (stats && stats.sales > 0) {
+      path.classList.add('has-sales');
+      // Intensidade da cor conforme volume
+      const intensity = 0.35 + (stats.sales / maxSales) * 0.55;
+      path.style.fill = `rgba(59,130,246,${intensity.toFixed(2)})`;
+    } else {
+      path.style.fill = '';
+    }
+    if (selectedUf && uf === selectedUf) {
+      path.classList.add('selected');
+    }
+  });
+
+  // Ajusta cor das labels
+  $$('#mapContainer svg .state-label').forEach(label => {
+    const prev = label.previousElementSibling;
+    if (prev && (prev.classList.contains('has-sales') || prev.classList.contains('selected'))) {
+      label.style.fill = '#ffffff';
+    } else {
+      label.style.fill = '#475569';
+    }
+  });
 }
 
-/* =========================================================
+function setupMapInteractions(){
+  const tooltip = document.getElementById('mapTooltip');
+  const container = document.getElementById('mapContainer');
+  const map = getStateStats();
+
+  $$('#mapContainer svg .state').forEach(path => {
+    path.addEventListener('mouseenter', e => {
+      const uf = path.dataset.uf;
+      const stats = map[uf];
+      const state = STATES.find(s => s.uf === uf);
+      if (!state) return;
+      tooltip.querySelector('.tt-uf').textContent = state.uf;
+      tooltip.querySelector('.tt-name').textContent = state.name;
+      tooltip.classList.add('show');
+    });
+
+    path.addEventListener('mousemove', e => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    });
+
+    path.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('show');
+    });
+
+    path.addEventListener('click', () => {
+      const uf = path.dataset.uf;
+      selectedState = selectedState === uf ? null : uf;
+      renderStates();
+      highlightMap(selectedState);
+
+      // Scroll suave até a lista de estados
+      if (selectedState) {
+        const item = document.querySelector(`.state-item[data-state="${selectedState}"]`);
+        if (item) item.scrollIntoView({ behavior:'smooth', block:'center' });
+      }
+    });
+  });
+
+  // Suporte a toque (mobile)
+  $$('#mapContainer svg .state').forEach(path => {
+    path.addEventListener('touchstart', e => {
+      const uf = path.dataset.uf;
+      const stats = map[uf];
+      const state = STATES.find(s => s.uf === uf);
+      if (!state) return;
+      tooltip.querySelector('.tt-uf').textContent = state.uf;
+      tooltip.querySelector('.tt-name').textContent = state.name;
+      const touch = e.touches[0];
+      const rect = container.getBoundingClientRect();
+      tooltip.style.left = (touch.clientX - rect.left) + 'px';
+      tooltip.style.top = (touch.clientY - rect.top) + 'px';
+      tooltip.classList.add('show');
+    }, { passive: true });
+
+    path.addEventListener('touchend', () => {
+      setTimeout(() => tooltip.classList.remove('show'), 900);
+    });
+  });
+}
+
+/* ============================================================
    UTM
-   ========================================================= */
+   ============================================================ */
 function renderUTMs(){
-  const filtered = filterOrdersByPeriod(utms, currentPeriod);
+  const filtered = filterByPeriod(utms, currentPeriod);
   const total = filtered.reduce((s, u) => s + (Number(u.value) || 0), 0);
-  document.getElementById('utmValue').textContent = hideValues ? '••••' : brl(total);
+  document.getElementById('utmValue').textContent = brl(total);
 
   const container = document.getElementById('utmList');
   if (!filtered.length) {
     container.innerHTML = `
-      <div class="empty-state" style="padding:20px 10px">
+      <div class="empty-state" style="padding:22px 10px">
         <div class="msg">Nenhum UTM encontrado</div>
         <div class="sub">Os dados aparecerão quando houver tráfego rastreado.</div>
       </div>`;
@@ -1419,23 +1867,23 @@ function renderUTMs(){
   container.innerHTML = Object.entries(map).map(([k,v]) => `
     <div class="method-row">
       <span class="name">${escapeHtml(k)}</span>
-      <span class="count">${hideValues ? '••••' : brl(v)}</span>
+      <span class="count">${brl(v)}</span>
     </div>
   `).join('');
 }
 
-/* =========================================================
+/* ============================================================
    ÚLTIMAS VENDAS
-   ========================================================= */
+   ============================================================ */
 function renderLastSales(){
   const container = document.getElementById('lastSalesList');
-  const filtered = paidOrders(filterOrdersByPeriod(orders, currentPeriod))
+  const filtered = paidOrders(filterByPeriod(orders, currentPeriod))
     .sort((a,b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt))
     .slice(0, 8);
 
   if (!filtered.length) {
     container.innerHTML = `
-      <div class="empty-state" style="padding:20px 10px">
+      <div class="empty-state" style="padding:22px 10px">
         <div class="msg">Nenhuma venda encontrada</div>
         <div class="sub">As vendas aparecerão aqui assim que acontecerem.</div>
       </div>`;
@@ -1443,12 +1891,12 @@ function renderLastSales(){
   }
 
   container.innerHTML = filtered.map(o => {
-    const name = o.customer || 'Cliente';
+    const name = o.customer || o.customerName || 'Cliente';
     const initial = name.charAt(0).toUpperCase();
     const date = new Date(o.date || o.createdAt);
     const diff = (Date.now() - date) / 1000;
     let time;
-    if (diff < 60) time = 'agora';
+    if (diff < 60) time = 'agora mesmo';
     else if (diff < 3600) time = Math.floor(diff/60) + ' min atrás';
     else if (diff < 86400) time = Math.floor(diff/3600) + 'h atrás';
     else time = date.toLocaleDateString('pt-BR');
@@ -1459,48 +1907,75 @@ function renderLastSales(){
           <div class="name">${escapeHtml(name)}</div>
           <div class="time">${time}</div>
         </div>
-        <div class="sale-amount">${hideValues ? '••••' : brl(o.valor || 0)}</div>
+        <div class="sale-amount">${brl(o.valor || 0)}</div>
       </div>
     `;
   }).join('');
 }
 
-/* =========================================================
-   CONTROLES DA UI
-   ========================================================= */
-document.getElementById('toggleValues').addEventListener('click', () => {
-  hideValues = !hideValues;
-  refreshAll();
-});
+/* ============================================================
+   CONTROLES
+   ============================================================ */
+function setupPeriodDropdown(){
+  const trigger = document.getElementById('periodTrigger');
+  const menu = document.getElementById('periodMenu');
 
-document.getElementById('dateFilter').addEventListener('click', () => {
-  const options = ['Hoje', 'Últimos 7 dias', 'Este mês', 'Tudo'];
-  const current = options.indexOf(document.getElementById('dateLabel').textContent);
-  const next = options[(current + 1) % options.length];
-  document.getElementById('dateLabel').textContent = next;
-  currentPeriod = next === 'Hoje' ? 'today' : next === 'Últimos 7 dias' ? 'week' : next === 'Este mês' ? 'month' : 'all';
-  refreshAll();
-});
-
-document.querySelectorAll('.mini-table th .sort').forEach(el => {
-  el.addEventListener('click', () => {
-    const field = el.dataset.sort;
-    if (productSort.field === field) {
-      productSort.dir = productSort.dir === 'asc' ? 'desc' : 'asc';
-    } else {
-      productSort.field = field;
-      productSort.dir = 'desc';
-    }
-    renderProductsTable();
+  trigger.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.classList.toggle('show');
+    trigger.classList.toggle('open');
   });
-});
 
-document.getElementById('productSearch').addEventListener('input', renderProductsTable);
-document.getElementById('productFilter').addEventListener('change', renderProductsTable);
+  document.addEventListener('click', () => {
+    menu.classList.remove('show');
+    trigger.classList.remove('open');
+  });
 
-/* =========================================================
-   REFRESH GERAL
-   ========================================================= */
+  menu.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.stopPropagation();
+      const period = item.dataset.period;
+      currentPeriod = period;
+      document.getElementById('periodLabel').textContent = PERIOD_LABELS[period];
+      menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      menu.classList.remove('show');
+      trigger.classList.remove('open');
+      refreshAll();
+    });
+  });
+}
+
+function setupEyeToggle(){
+  const btn = document.getElementById('toggleValues');
+  btn.addEventListener('click', () => {
+    hideValues = !hideValues;
+    document.body.classList.toggle('hide-values', hideValues);
+    btn.classList.toggle('active', hideValues);
+    document.getElementById('eyeIcon').innerHTML = hideValues
+      ? `<path d="m3 3 18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M6.7 6.7C4.1 8.3 2 12 2 12s3.5 7 10 7c2 0 3.8-.6 5.3-1.6"/><path d="M9.9 5.2C10.6 5.1 11.3 5 12 5c6.5 0 10 7 10 7s-.8 1.6-2.3 3.3"/>`
+      : `<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>`;
+  });
+}
+
+function setupProductSort(){
+  $$('.mini-table th .sort').forEach(el => {
+    el.addEventListener('click', () => {
+      const field = el.dataset.sort;
+      if (productSort.field === field) {
+        productSort.dir = productSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        productSort.field = field;
+        productSort.dir = 'desc';
+      }
+      renderProductsTable();
+    });
+  });
+}
+
+/* ============================================================
+   REFRESH
+   ============================================================ */
 function refreshAll(){
   renderKPIs();
   buildPerformanceChart();
@@ -1509,30 +1984,36 @@ function refreshAll(){
   buildConversionChart();
   renderMethodsAndGateways();
   renderStates();
-  renderMapHighlight();
+  highlightMap(selectedState);
   renderUTMs();
   renderLastSales();
 }
 
-/* =========================================================
-   REATIVIDADE: reage a mudanças no localStorage de outras abas
-   ========================================================= */
+/* ============================================================
+   REATIVIDADE
+   ============================================================ */
 window.addEventListener('storage', e => {
-  if (!e.key) return;
   if (e.key === 'admin_sync_ping') {
     products = getStore(STORAGE_KEYS.products, []);
-    orders = getStore(STORAGE_KEYS.orders, []);
-    users = getStore(STORAGE_KEYS.users, []);
-    pixTxs = getStore(STORAGE_KEYS.pixTxs, []);
-    utms = getStore(STORAGE_KEYS.utms, []);
-    visits = getStore(STORAGE_KEYS.visits, []);
+    orders   = getStore(STORAGE_KEYS.orders, []);
+    users    = getStore(STORAGE_KEYS.users, []);
+    pixTxs   = getStore(STORAGE_KEYS.pixTxs, []);
+    utms     = getStore(STORAGE_KEYS.utms, []);
+    visits   = getStore(STORAGE_KEYS.visits, []);
     refreshAll();
   }
 });
 
-/* =========================================================
+/* ============================================================
    INIT
-   ========================================================= */
+   ============================================================ */
+setupPeriodDropdown();
+setupEyeToggle();
+setupProductSort();
+setupMapInteractions();
+document.getElementById('productSearch').addEventListener('input', renderProductsTable);
+document.getElementById('productFilter').addEventListener('change', renderProductsTable);
+
 refreshAll();
 </script>
 </body>
